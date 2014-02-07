@@ -4,7 +4,7 @@ var User
     , LocalStrategy =   require('passport-local').Strategy
     , GoogleStrategy = require('passport-google').Strategy
     , check =           require('validator').check
-    , userRoles =       require('../../client/js/routingConfig').userRoles;
+    , userRoles =       require('../../client/js/core/routingConfig').userRoles;
 
 var users = [
     {

@@ -4,9 +4,20 @@ var express =       require('express')
     , path =        require('path')
     , User =        require('./server/models/User.js');
 
+
+/**
+ * Define environment. Can be pre-set via grunt already
+ */
+
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
+
 var app = module.exports = express();
 
-app.set('views', __dirname + '/client/views');
+
+
+
+app.set('views', __dirname + '/client/js/core');
 app.set('view engine', 'jade');
 app.use(express.logger('dev'));
 app.use(express.json());

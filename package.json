@@ -16,8 +16,7 @@
   },
   "subdomain": "oto",
   "scripts": {
-    "start": "grunt dev",
-    "test": "grunt test"
+    "start": "grunt dev"
   },
   "engines": {
     "node": "0.8.x",

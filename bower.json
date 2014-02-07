@@ -1,0 +1,27 @@
+{
+  "name": "oto",
+  "version": "0.0.0",
+  "homepage": "https://github.com/olingerc/otonode",
+  "authors": [
+    "Christophe Olinger <christophe@olinger.eu>"
+  ],
+  "description": "Web development learning ground and organize my family",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "client/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.1.0",
+    "font-awesome": "~4.0.3",
+    "underscore": "~1.5.2",
+    "angular": "~1.2.11",
+    "angular-cookies": "~1.2.11",
+    "angular-route": "~1.2.11",
+    "jquery": "~2.1.0"
+  }
+}

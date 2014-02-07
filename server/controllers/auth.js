@@ -2,7 +2,7 @@ var passport =  require('passport')
     , User = require('../models/User.js');
 
 module.exports = {
-    register: function(req, res, next) {
+    register: function(req, res, next) { //TODO: convert to add user. No register page, only admin can add user
         try {
             User.validate(req.body);
         }

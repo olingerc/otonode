@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('angular-client-side-auth', ['ngCookies', 'ngRoute'])
+angular.module('oto', ['ngCookies', 'ngRoute'])
 
     .config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 
@@ -16,12 +16,6 @@ angular.module('angular-client-side-auth', ['ngCookies', 'ngRoute'])
         {
             templateUrl:    'login',
             controller:     'LoginCtrl',
-            access:         access.anon
-        });
-    $routeProvider.when('/register',
-        {
-            templateUrl:    'register',
-            controller:     'RegisterCtrl',
             access:         access.anon
         });
     $routeProvider.when('/private',
@@ -56,7 +50,7 @@ angular.module('angular-client-side-auth', ['ngCookies', 'ngRoute'])
                     return $q.reject(response);
                 }
             }
-        }
+        };
     });
 
 }])

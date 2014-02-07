@@ -21,32 +21,6 @@ var routes = [
 
     // OAUTH
     {
-        path: '/auth/twitter',
-        httpMethod: 'GET',
-        middleware: [passport.authenticate('twitter')]
-    },
-    {
-        path: '/auth/twitter/callback',
-        httpMethod: 'GET',
-        middleware: [passport.authenticate('twitter', {
-            successRedirect: '/',
-            failureRedirect: '/login'
-        })]
-    },
-    {
-        path: '/auth/facebook',
-        httpMethod: 'GET',
-        middleware: [passport.authenticate('facebook')]
-    },
-    {
-        path: '/auth/facebook/callback',
-        httpMethod: 'GET',
-        middleware: [passport.authenticate('facebook', {
-            successRedirect: '/',
-            failureRedirect: '/login'
-        })]
-    },
-    {
         path: '/auth/google',
         httpMethod: 'GET',
         middleware: [passport.authenticate('google')]
@@ -59,26 +33,8 @@ var routes = [
             failureRedirect: '/login'
         })]
     },
-    {
-        path: '/auth/linkedin',
-        httpMethod: 'GET',
-        middleware: [passport.authenticate('linkedin')]
-    },
-    {
-        path: '/auth/linkedin/callback',
-        httpMethod: 'GET',
-        middleware: [passport.authenticate('linkedin', {
-            successRedirect: '/',
-            failureRedirect: '/login'
-        })]
-    },
 
     // Local Auth
-    {
-        path: '/register',
-        httpMethod: 'POST',
-        middleware: [AuthCtrl.register]
-    },
     {
         path: '/login',
         httpMethod: 'POST',
@@ -141,7 +97,7 @@ module.exports = function(app) {
                 break;
         }
     });
-}
+};
 
 function ensureAuthorized(req, res, next) {
     var role;

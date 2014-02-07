@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'client')));
 app.use(express.cookieParser());
 app.use(express.cookieSession(
     {
-        secret: process.env.COOKIE_SECRET || "Superdupersecret"
+        secret: process.env.COOKIE_SECRET || "E&R:f>+2s70cy~SpZp4%b(7rb`s!PCxSuD3@po)/M)14{gW-;&5mp3te[+#$k^Oq')"
     }));
 
 app.configure('development', 'production', function() {

@@ -1,5 +1,5 @@
 {
-  "name": "angular-client-side-auth",
+  "name": "oto",
   "version": "0.0.1",
   "dependencies": {
     "express": "~3.4.7",
@@ -8,16 +8,13 @@
     "passport-local": "~0.1.6",
     "underscore": "~1.5.2",
     "validator": "~1.1.1",
-    "passport-twitter": "~0.1.4",
-    "passport-facebook": "~0.1.5",
-    "passport-google": "~0.3.0",
-    "passport-linkedin": "~0.1.3"
+    "passport-google": "~0.3.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fnakstad/angular-client-side-auth"
+    "url": "https://github.com/olingerc/otonode"
   },
-  "subdomain": "angular-client-side-auth",
+  "subdomain": "oto",
   "scripts": {
     "start": "grunt dev",
     "test": "grunt test"

@@ -2,7 +2,7 @@ var express =       require('express')
     , http =        require('http')
     , passport =    require('passport')
     , path =        require('path')
-    , User =        require('./server/models/User.js');
+    , User =        require('./server/core/models/User.js');
 
 
 /**
@@ -13,8 +13,6 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 
 var app = module.exports = express();
-
-
 
 
 app.set('views', __dirname + '/client/js/core');
@@ -47,7 +45,7 @@ passport.use(User.googleStrategy());   // Comment out this line if you don't wan
 passport.serializeUser(User.serializeUser);
 passport.deserializeUser(User.deserializeUser);
 
-require('./server/routes.js')(app);
+require('./server/core/routes.js')(app);
 
 app.set('port', process.env.PORT || 8000);
 http.createServer(app).listen(app.get('port'), function(){

@@ -4,8 +4,9 @@ var _ =           require('underscore')
     , AuthCtrl =  require('./controllers/auth')
     , UserCtrl =  require('./controllers/user')
     , User =      require('./models/User.js')
-    , userRoles = require('../client/js/core/routingConfig').userRoles
-    , accessLevels = require('../client/js/core/routingConfig').accessLevels;
+    , userRoles = require('../../client/js/core/routingConfig').userRoles
+    , accessLevels = require('../../client/js/core/routingConfig').accessLevels
+    , household_api = require('../household/api');
 
 var routes = [
 
@@ -17,6 +18,13 @@ var routes = [
             var requestedView = path.join('./', req.url);
             res.render(requestedView);
         }]
+    },
+
+    //APIs for modules
+    {
+        path: '/householdapi/*',
+        httpMethod: 'GET',
+        middleware: [household_api]
     },
 
     // OAUTH

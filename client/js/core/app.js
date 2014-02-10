@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('oto', ['ngCookies', 'ngRoute'])
-
-    .config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
+.config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
 
     var access = routingConfig.accessLevels;
 
+   //Templates are preloaded with an id in index.jade
     $routeProvider.when('/',
         {
             templateUrl:    'home',

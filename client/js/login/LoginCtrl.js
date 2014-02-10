@@ -1,6 +1,4 @@
-angular.module('oto')
-.controller('LoginCtrl',
-['$rootScope', '$scope', '$location', '$window', 'Auth', function($rootScope, $scope, $location, $window, Auth) {
+angular.module('oto').controller('LoginCtrl', ['$rootScope', '$scope', '$location', '$window', 'Auth', function($rootScope, $scope, $location, $window, Auth) {
 
     $scope.rememberme = true;
     $scope.login = function() {

@@ -5,27 +5,9 @@ var _ =           require('underscore')
     , UserCtrl =  require('./controllers/user')
     , User =      require('./models/User.js')
     , userRoles = require('../../client/js/core/routingConfig').userRoles
-    , accessLevels = require('../../client/js/core/routingConfig').accessLevels
-    , household_api = require('../household/api');
+    , accessLevels = require('../../client/js/core/routingConfig').accessLevels;
 
 var routes = [
-
-    // Views
-    {
-        path: '/partials/*',
-        httpMethod: 'GET',
-        middleware: [function (req, res) {
-            var requestedView = path.join('./', req.url);
-            res.render(requestedView);
-        }]
-    },
-
-    //APIs for modules
-    {
-        path: '/householdapi/*',
-        httpMethod: 'GET',
-        middleware: [household_api]
-    },
 
     // OAUTH
     {

@@ -33,7 +33,8 @@ angular.module('oto')
     };
 }]);
 
-angular.module('oto').directive('activeNav', ['$location', function($location) {
+angular.module('oto')
+.directive('activeNav', ['$location', function($location) {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
@@ -49,7 +50,5 @@ angular.module('oto').directive('activeNav', ['$location', function($location) {
                 }
             });
         }
-
     };
-
 }]);

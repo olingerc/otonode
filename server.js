@@ -4,16 +4,17 @@ var express =       require('express')
     , path =        require('path')
     , User =        require('./server/core/models/User.js');
 
-
 /**
  * Define environment. Can be pre-set via grunt already
  */
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
+/**
+ * Configure app
+ */
 
 var app = module.exports = express();
-
 
 app.set('views', __dirname + '/client/js/core');
 app.set('view engine', 'jade');
@@ -36,6 +37,10 @@ app.configure('development', 'production', function() {
     });
 });
 
+/**
+ * AUTHENTICATION
+ */
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -45,8 +50,20 @@ passport.use(User.googleStrategy());   // Comment out this line if you don't wan
 passport.serializeUser(User.serializeUser);
 passport.deserializeUser(User.deserializeUser);
 
+/**
+ * API MODULES (Need to be defined before core routes)
+ */
+var household = require('./server/household/api');
+app.use(household);
+
+/**
+ * CORE ROUTES
+ */
 require('./server/core/routes.js')(app);
 
+/**
+ * Start Server
+ */
 app.set('port', process.env.PORT || 8000);
 http.createServer(app).listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));

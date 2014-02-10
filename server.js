@@ -18,6 +18,8 @@ var config = require('./config/config');
 
 // Bootstrap db connection
 mongoose.connect(config.db);
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
 
 /**
  * Configure app

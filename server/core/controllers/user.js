@@ -15,6 +15,11 @@ var mongoose =    require('mongoose')
   , _ =           require('underscore')
   , userRoles =   require('../../../client/js/core/routingConfig').userRoles;
 
+
+/**
+ * Public user api methods
+ */
+
 module.exports = {
     index: function(req, res) {
         User.find({}, function(err, users) {
@@ -69,21 +74,36 @@ module.exports = {
                 else res.json(user.censor());
              });
           }
-          
        });
     },
     remove: function(req, res, next) {
-        /*try { //TODO: somehow validate
-            User.validate(req.body);
-        }
-        catch(err) {
-            return res.send(400, err.message);
-        }*/
        User.remove({_id: req.params._id}, function(err) {
           if (err) {
              res.send(500, err);
           }
           else res.send('removed');
        });
+   },
+   checkAdminMinimum: function(req, res) {
+      User.findOne({'username': 'admin'}, function(err, user) {
+         if (err) {
+            console.log(err);
+         }
+         if (!user) {
+            var user = new User({
+               'username':'admin',
+               'password':'123',
+               'name':'User created by system',
+               'role': userRoles.admin
+            });
+            user.save(function(err) {
+               if (err) {
+                  console.log('Error while trying to create initial admin user');
+                  console.log(err);
+               }
+            });
+            console.log('An initial admin user has been created: admin/123');
+         }
+      });
    }
 };

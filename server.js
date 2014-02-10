@@ -2,7 +2,7 @@ var express =       require('express')
     , http =        require('http')
     , passport =    require('passport')
     , path =        require('path')
-    , User =        require('./server/core/models/User.js')
+    , User_Ctrl =   require('./server/core/controllers/user.js')
     , _ =           require('underscore')
     , mongoose =    require('mongoose');
 
@@ -16,13 +16,10 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 //Initialize system variables
 var config = require('./config/config');
 
-// Bootstrap db connection
+// Configure mongoose connection
 mongoose.connect(config.db);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-
-// Bootstrap passport config
-require('./config/passport')(passport);
 
 /**
  * Configure app
@@ -32,12 +29,6 @@ var app = module.exports = express();
 
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/client/js/core');
-
-
-//Not sure from mean
-   app.set('showStackError', true); //Necessary?
-   //Mean uses dynamic helpers. what are those?
-//End not sure
 
 //Taken over from MEAN
    app.locals.pretty = true;
@@ -65,13 +56,9 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 
 app.use(express.static(path.join(__dirname, 'client')));
+
 app.use(express.cookieParser());
-app.use(express.cookieSession(
-      {
-         secret: config.sessionSecret
-      }
-   )
-);
+app.use(express.cookieSession({secret: config.sessionSecret}));
 
 app.configure('development', 'production', function() {
     app.use(express.csrf());
@@ -84,6 +71,11 @@ app.configure('development', 'production', function() {
 /**
  * AUTHENTICATION
  */
+
+// Load passposrt config
+require('./config/passport')(passport);
+//make sure at least one admin user exists
+User_Ctrl.checkAdminMinimum();
 
 app.use(passport.initialize());
 app.use(passport.session());

@@ -6,7 +6,6 @@
 
 require('../models/User');
 
-
 /**
  * Module dependencies
  */
@@ -14,9 +13,11 @@ require('../models/User');
 var passport =  require('passport')
   , mongoose =  require('mongoose')
   , User =      mongoose.model('User')
-  , _ =         require('underscore')
   , userRoles = require('../../../client/js/core/routingConfig').userRoles;
 
+/**
+ * Authentication methods
+ */
 
 module.exports = {
     login: function(req, res, next) {
@@ -29,7 +30,7 @@ module.exports = {
                     return next(err);
                 }
 
-                if(req.body.rememberme) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7; //TODO
+                if(req.body.rememberme) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7; //TODO: update to super safe version in previous oto app (giv new cookie each time, save those that are allowed in db)
                 res.json(200, { "role": user.role, "username": user.username });
             });
         })(req, res, next);

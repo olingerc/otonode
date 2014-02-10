@@ -5,11 +5,11 @@
  */
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema
-    , _ =               require('underscore')
+    //, _ =               require('underscore')
     , passport =        require('passport')
     , LocalStrategy =   require('passport-local').Strategy
     , GoogleStrategy =  require('passport-google').Strategy
-    , check =           require('validator').check
+    //, check =           require('validator').check
     , userRoles =       require('../../../client/js/core/routingConfig').userRoles
     , crypto =          require('crypto');
 
@@ -17,11 +17,11 @@ var mongoose = require('mongoose'),
  * User Schema
  */
 var UserSchema = new Schema({
-    name: String,
     username: {
         type: String,
         unique: true
     },
+    name: String,
     role: {},
     email: String,
     salt: String,

@@ -5,7 +5,7 @@ var _ =           require('underscore')
 module.exports = function(app, routes) {
 
     _.each(routes, function(route) {
-        route.middleware.unshift(ensureAuthorized);
+        route.middleware.unshift(ensureRouteAuthorized);
         var args = _.flatten([route.path, route.middleware]);
 
         switch(route.httpMethod.toUpperCase()) {
@@ -28,7 +28,7 @@ module.exports = function(app, routes) {
     });
 };
 
-function ensureAuthorized(req, res, next) {
+function ensureRouteAuthorized(req, res, next) {
     var role;
     if(!req.user) role = userRoles.public;
     else          role = req.user.role;

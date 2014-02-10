@@ -1,11 +1,11 @@
 angular.module('oto').controller('HouseholdCtrl', ['$scope', '$http', '$rootScope', function($scope, $http, $rootScope) {
-   $scope.test1 = 'Init';
    $http.get('/api/household/all').success(function(resp) {
-      $scope.test1 = JSON.stringify(resp);
+      $scope.kitties = resp;
    });
 
-   $scope.test2 = 'Init';
-   $http.get('/api/household/one').success(function(resp) {
-      $scope.test2 = JSON.stringify(resp);
-   });
+   $scope.newkitty = function() {
+      $http.post('/api/household/create', {'name' :$scope.kittyname}).success(function(kitty) {
+         $scope.kitties.push(kitty);
+      });
+   };
 }]);

@@ -1,9 +1,10 @@
 var express =       require('express')
-    , mongoStore = require('connect-mongo')(express)
     , http =        require('http')
     , passport =    require('passport')
     , path =        require('path')
-    , User =        require('./server/core/models/User.js');
+    , User =        require('./server/core/models/User.js')
+    , _ =           require('underscore')
+    , mongoose =    require('mongoose');
 
 /**
  * Define environment. Can be pre-set via grunt already
@@ -13,11 +14,10 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 
 //Initialize system variables
-var config = require('./config/config'),
-    mongoose = require('mongoose');
+var config = require('./config/config');
 
 // Bootstrap db connection
-var db = mongoose.connect(config.db);
+mongoose.connect(config.db);
 
 /**
  * Configure app
@@ -62,13 +62,11 @@ app.use(express.methodOverride());
 app.use(express.static(path.join(__dirname, 'client')));
 app.use(express.cookieParser());
 app.use(express.cookieSession(
-    {
-        secret: config.sessionSecret,
-        store: new mongoStore({
-            db: db.connection.db,
-            collection: config.sessionCollection
-        })
-    }));
+      {
+         secret: config.sessionSecret
+      }
+   )
+);
 
 app.configure('development', 'production', function() {
     app.use(express.csrf());
@@ -92,20 +90,25 @@ passport.serializeUser(User.serializeUser);
 passport.deserializeUser(User.deserializeUser);
 
 /**
- * API MODULES (Need to be defined before core routes)
- */
-var household = require('./server/household/api');
-app.use(household);
-
-/**
  * CORE ROUTES
  */
-require('./server/core/routes.js')(app);
+var routes = require('./server/core/routes/coreRoutes');
+
+/**
+ * add API ROUTES
+ */
+_.extend(routes, require('./server/household/routes'));
+
+/**
+ * Load routes
+ */
+require('./server/core/setupRouting.js')(app, routes);
+
 
 /**
  * Start Server
  */
-app.set('port', process.env.PORT || 8000);
+app.set('port', process.env.PORT || config.port);
 http.createServer(app).listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));
 });

@@ -18,8 +18,11 @@ form.form-horizontal(ng-submit="login()", name="loginForm", role="form")
     .form-group
         .col-sm-offset-2.col-sm-10
             button.btn.btn-default(type="submit", data-ng-disabled="loginForm.$invalid") Log in
+
+    span.text-warning(ng-show='loginFormState.loginError') Username does not exist or wrong password
+    span.text-muted(ng-show='core.savedLocation') Please log in to access {{core.savedLocation}}
+
 hr
-p ... or use one of them fancy social logins:
 .btn-group
     a.btn.btn-default(href="", data-ng-click="loginOauth('google')")
         i.fa.fa-google-plus-square

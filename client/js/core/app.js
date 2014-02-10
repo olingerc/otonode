@@ -29,6 +29,11 @@ angular.module('oto', ['ngCookies', 'ngRoute'])
             templateUrl:    'admin',
             access:         access.admin
         });
+    $routeProvider.when('/401', 
+        {
+            templateUrl:    '401.html',
+            access:         access.public
+        });
     $routeProvider.when('/404',
         {
             templateUrl:    '404',
@@ -54,13 +59,21 @@ angular.module('oto', ['ngCookies', 'ngRoute'])
 
 }])
 
-    .run(['$rootScope', '$location', '$http', 'Auth', function ($rootScope, $location, $http, Auth) {
-
+    .run(['$rootScope', '$location', '$http', 'Auth', 
+       function ($rootScope, $location, $http, Auth) {
+        //init rootscope objects. I want to have separete objects for my modules
+        $rootScope.core = {};
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
+            //Reset subnav
+            $rootScope.core.subnavurl = '';
             $rootScope.error = null;
             if (!Auth.authorize(next.access)) {
-                if(Auth.isLoggedIn()) $location.path('/');
-                else                  $location.path('/login');
+               if(Auth.isLoggedIn()) {
+                  $location.path('/401').replace(); //tell user that he is not allowed
+               } else {
+                  $rootScope.core.savedLocation = $location.url();
+                  $location.path('/login');
+               }
             }
         });
 

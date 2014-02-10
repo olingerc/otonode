@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('oto')
-.factory('Auth', function($http, $cookieStore){
+.factory('Auth', function($http, $cookieStore, $rootScope){
 
     var accessLevels = routingConfig.accessLevels
         , userRoles = routingConfig.userRoles
@@ -44,6 +44,7 @@ angular.module('oto')
                     role: userRoles.public
                 });
                 success();
+                $rootScope.core.savedLocation = null;
             }).error(error);
         },
         accessLevels: accessLevels,

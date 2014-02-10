@@ -9,8 +9,7 @@
     "underscore": "~1.5.2",
     "validator": "~1.1.1",
     "passport-google": "~0.3.0",
-    "mongoose": "~3.8.6",
-    "connect-mongo": "~0.4.0"
+    "mongoose": "~3.8.6"
   },
   "repository": {
     "type": "git",

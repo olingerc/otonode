@@ -11,28 +11,9 @@ var mongoose = require('mongoose'),
 module.exports = function(passport) {
 
     // Serialize the user id to push into the session
-
-    /*
-    serializeUser: function(user, done) {
-        done(null, user.id);
-    },
-     */
     passport.serializeUser(function(user, done) {
         done(null, user.id);
     });
-
-    // Deserialize the user object based on a pre-serialized token
-    // which is the user id
-
-    /*
-
-    deserializeUser: function(id, done) {
-        var user = module.exports.findById(id);
-
-        if(user)    { done(null, user); }
-        else        { done(null, false); }
-    }
-     */
 
     // Deserialize the user object based on a pre-serialized token
     // which is the user id
@@ -45,28 +26,6 @@ module.exports = function(passport) {
     });
 
     // Use local strategy
-
-    /*
-    localStrategy: new LocalStrategy(
-        function(username, password, done) {
-
-            var user = module.exports.findByUsername(username);
-
-            if(!user) {
-                done(null, false, { message: 'Incorrect username.' });
-            }
-            else if(user.password != password) {
-                done(null, false, { message: 'Incorrect username.' });
-            }
-            else {
-                return done(null, user);
-            }
-
-        }
-    ),
-     */
-
-
     passport.use(new LocalStrategy({
             usernameField: 'username',
             passwordField: 'password'

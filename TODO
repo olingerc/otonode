@@ -4,3 +4,7 @@ Why do I need to do: sudo npm install -g grunt-cli. Is this not indicated in the
 *Future:
 File uploads: https://github.com/felixge/node-formidable
 Use font awesome (the .fa things)
+
+*Core:
+- Validations for user
+- OAuth by google

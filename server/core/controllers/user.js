@@ -13,15 +13,13 @@ require('../models/User');
 var mongoose =    require('mongoose')
   , User =        mongoose.model('User')
   , _ =           require('underscore')
-  , userRoles = require('../../../client/js/core/routingConfig').userRoles;
+  , userRoles =   require('../../../client/js/core/routingConfig').userRoles;
 
 module.exports = {
     index: function(req, res) {
         User.find({}, function(err, users) {
            _.each(users, function(user) {
-               delete user.hashed_password; //TODO: this does not work!
-               delete user.salt;
-               delete user.google;
+               user.censor();
            });
            res.json(users);
         });
@@ -34,10 +32,8 @@ module.exports = {
             return res.send(400, err.message);
         }*/
         var user = new User(req.body);
-        user.provider = 'local'; //TODO: where is this set in the github inspirations?
-
         var message = null;
-        user.save(function(err) {
+        user.save(function(err, user) {
            if (err) {
               switch (err.code) {
                  case 11000:
@@ -49,13 +45,32 @@ module.exports = {
                }
                res.send(500, message);
             }
-            res.json(user);
+            else res.json(user.censor());
          });
-
-        /*User.addUser(req.body.username, req.body.password, req.body.role, function(err, user) {
-            if(err === 'UserAlreadyExists') return res.send(403, "User already exists");
-            else if(err)                    return res.send(500);
-        });*/
+    },
+    update: function(req, res, next) {
+        /*try { //TODO: somehow validate
+            User.validate(req.body);
+        }
+        catch(err) {
+            return res.send(400, err.message);
+        }*/
+       var id = req.params._id;
+       var user = User.findOne({_id:id}, function(err, user) {
+          if (err) {
+             res.send(500, err);
+          } else {
+             var updatedUser = req.body;
+             _.extend(user, updatedUser);
+             user.save(function(err, user) {
+                if (err) {
+                   res.send(500, err);
+                }
+                else res.json(user.censor());
+             });
+          }
+          
+       });
     },
     remove: function(req, res, next) {
         /*try { //TODO: somehow validate
@@ -68,8 +83,7 @@ module.exports = {
           if (err) {
              res.send(500, err);
           }
-          res.send('ok');
-
+          else res.send('removed');
        });
    }
 };

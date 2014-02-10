@@ -1,6 +1,10 @@
 angular.module('oto')
 .controller('UsersCtrl',
 ['$rootScope', '$scope', 'Users', 'Auth', function($rootScope, $scope, Users, Auth) {
+   
+   /**
+    * Initial values
+    */
    $scope.loading = true;
    $scope.userRoles = Auth.userRoles;
    $scope.master = {};
@@ -56,7 +60,7 @@ angular.module('oto')
       );
    };
 
-   /*$scope.updateUser = function(index) {
+   $scope.updateUser = function(index) {
       $scope.userFormState.action = 'save';
       $scope.user  = angular.copy($scope.users[index]);
       $scope.master = angular.copy($scope.user);
@@ -64,21 +68,23 @@ angular.module('oto')
    };
 
    $scope.confirmUpdate = function() {
-      $http({
-         method:'PUT',
-         url:'/users/' + $scope.user.id,
-         data:$scope.user
-      })
-      .success(function(data) {
-         $scope.users[$scope.userFormState.loadedIndex] = $scope.user;
-         $scope.resetForm();
-      }).
-      error(function(response) {
-         if (response.error.search('E11000 duplicate key error') > 0) {
-            $scope.userFormState.errorAlreadyExists = true;
-         }
-      });
-   };*/
+      Users.update($scope.user, 
+         function(user) {
+            $scope.users[$scope.userFormState.loadedIndex] = user;//$scope.user;
+            $scope.resetForm();            
+         },
+         function(err) {
+            if (err == 'Username already exists') {
+               $scope.userFormState.errorAlreadyExists = true;
+            }
+            else if (err == 'Please fill all the required fields') {
+               $scope.userFormState.errorFillAll = true;
+            }
+            else {
+               console.log(err);
+            }            
+         });
+   };
 
    $scope.resetForm = function() {
       $scope.user = {};
@@ -113,7 +119,7 @@ angular.module('oto')
 
    $scope.exportDB = function () {
       $scope.exportprogress = true;
-      $http.get('/exportdb')
+      $http.get('/exportdb') //TODO
       .success(function(response) {
          $scope.exportprogress = false;
          $scope.exportok = true;

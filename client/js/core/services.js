@@ -63,6 +63,9 @@ angular.module('oto')
         },
         add: function(user, success, error) {
            $http.post ('/users', user).success(success).error(error);
+        },
+        update: function(user, success, error) {
+           $http.put ('/users/' + user._id, user).success(success).error(error);
         }
     };
 });

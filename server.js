@@ -21,6 +21,9 @@ mongoose.connect(config.db);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
+// Bootstrap passport config
+require('./config/passport')(passport);
+
 /**
  * Configure app
  */
@@ -84,12 +87,6 @@ app.configure('development', 'production', function() {
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-passport.use(User.localStrategy);
-passport.use(User.googleStrategy());   // Comment out this line if you don't want to enable login via Google
-
-passport.serializeUser(User.serializeUser);
-passport.deserializeUser(User.deserializeUser);
 
 /**
  * CORE ROUTES

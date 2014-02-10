@@ -27,7 +27,6 @@ angular.module('oto', ['ngCookies', 'ngRoute'])
     $routeProvider.when('/admin',
         {
             templateUrl:    'admin',
-            controller:     'AdminCtrl',
             access:         access.admin
         });
     $routeProvider.when('/404',

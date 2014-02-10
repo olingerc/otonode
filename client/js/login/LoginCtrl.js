@@ -11,7 +11,7 @@ angular.module('oto').controller('LoginCtrl', ['$rootScope', '$scope', '$locatio
                 $location.path('/');
             },
             function(err) {
-                $rootScope.error = "Failed to login";
+                $rootScope.error = "Failed to login"; //TODO: beautify
             });
     };
 

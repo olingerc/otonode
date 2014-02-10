@@ -40,6 +40,18 @@ module.exports = routes = [
         middleware: [UserCtrl.index],
         accessLevel: accessLevels.admin
     },
+    {
+        path: '/users',
+        httpMethod: 'POST',
+        middleware: [UserCtrl.create],
+        accessLevel: accessLevels.admin
+    },
+    {
+        path: '/users/:_id',
+        httpMethod: 'DELETE',
+        middleware: [UserCtrl.remove],
+        accessLevel: accessLevels.admin
+    },
 
     // All other get requests should be handled by AngularJS's client-side routing system
     {

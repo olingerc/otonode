@@ -1,34 +1,154 @@
-var User
+"use strict";
+
+/**
+ * Module dependencies.
+ */
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema
     , _ =               require('underscore')
     , passport =        require('passport')
     , LocalStrategy =   require('passport-local').Strategy
     , GoogleStrategy = require('passport-google').Strategy
     , check =           require('validator').check
-    , userRoles =       require('../../../client/js/core/routingConfig').userRoles;
+    , userRoles =       require('../../../client/js/core/routingConfig').userRoles
+    , crypto =          require('crypto');
 
-var users = [
-    {
-        id:         1,
-        username:   "user",
-        password:   "123",
-        role:   userRoles.user
+/**
+ * User Schema
+ */
+var UserSchema = new Schema({
+    name: String,
+    username: {
+        type: String,
+        unique: true
     },
-    {
-        id:         2,
-        username:   "admin",
-        password:   "123",
-        role:   userRoles.admin
-    }
-];
+    role: {},
+    email: String,
+    salt: String,
+    hashed_password: String,
+    provider: String,
+    google: {}
+});
 
+/**
+ * Virtuals
+ */
+UserSchema.virtual('password').set(function(password) {
+    this._password = password;
+    this.salt = this.makeSalt();
+    this.hashed_password = this.encryptPassword(password);
+}).get(function() {
+    return this._password;
+});
+
+/**
+ * Validations
+ */
+var validatePresenceOf = function(value) {
+    return value && value.length;
+};
+
+
+/*
+ * Original validations I still need to program:
+    validate: function(user) {
+        check(user.username, 'Username must be 1-20 characters long').len(1, 20);
+        check(user.password, 'Password must be 5-60 characters long').len(5, 60);
+        check(user.username, 'Invalid username').not(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/);
+
+        // TODO: Seems node-validator's isIn function doesn't handle Number arrays very well...
+        // Till this is rectified Number arrays must be converted to string arrays
+        // https://github.com/chriso/node-validator/issues/185
+        var stringArr = _.map(_.values(userRoles), function(val) { return val.toString(); });
+        check(user.role, 'Invalid user role given').isIn(stringArr);
+    }
+ */
+
+
+
+
+// the below 4 validations only apply if you are signing up traditionally
+UserSchema.path('name').validate(function(name) {
+    // if you are authenticating by any of the oauth strategies, don't validate
+    if (!this.provider) return true;
+    return (typeof name === 'string' && name.length > 0);
+}, 'Name cannot be blank');
+
+UserSchema.path('email').validate(function(email) {
+    // if you are authenticating by any of the oauth strategies, don't validate
+    if (!this.provider) return true;
+    return (typeof email === 'string' && email.length > 0);
+}, 'Email cannot be blank');
+
+UserSchema.path('username').validate(function(username) {
+    // if you are authenticating by any of the oauth strategies, don't validate
+    if (!this.provider) return true;
+    return (typeof username === 'string' && username.length > 0);
+}, 'Username cannot be blank');
+
+UserSchema.path('hashed_password').validate(function(hashed_password) {
+    // if you are authenticating by any of the oauth strategies, don't validate
+    if (!this.provider) return true;
+    return (typeof hashed_password === 'string' && hashed_password.length > 0);
+}, 'Password cannot be blank');
+
+
+/**
+ * Pre-save hook
+ */
+UserSchema.pre('save', function(next) {
+    if (!this.isNew) return next();
+
+    if (!validatePresenceOf(this.password) && !this.provider)
+        next(new Error('Invalid password'));
+    else
+        next();
+});
+
+
+/**
+ * Methods
+ */
+UserSchema.methods = {
+    /**
+     * Authenticate - check if the passwords are the same
+     *
+     * @param {String} plainText
+     * @return {Boolean}
+     * @api public
+     */
+    authenticate: function(plainText) {
+        return this.encryptPassword(plainText) === this.hashed_password;
+    },
+
+    /**
+     * Make salt
+     *
+     * @return {String}
+     * @api public
+     */
+    makeSalt: function() {
+        return crypto.randomBytes(16).toString('base64');
+    },
+
+    /**
+     * Encrypt password
+     *
+     * @param {String} password
+     * @return {String}
+     * @api public
+     */
+    encryptPassword: function(password) {
+        if (!password || !this.salt) return '';
+        var salt = new Buffer(this.salt, 'base64');
+        return crypto.pbkdf2Sync(password, salt, 10000, 64).toString('base64');
+    }
+};
+
+/*
 module.exports = {
     addUser: function(username, password, role, callback) {
         if(this.findByUsername(username) !== undefined)  return callback("UserAlreadyExists");
-
-        // Clean up when 500 users reached
-        if(users.length > 500) {
-            users = users.slice(0, 2);
-        }
 
         var user = {
             id:         _.max(users, function(user) { return user.id; }).id + 1,
@@ -82,46 +202,8 @@ module.exports = {
         // https://github.com/chriso/node-validator/issues/185
         var stringArr = _.map(_.values(userRoles), function(val) { return val.toString(); });
         check(user.role, 'Invalid user role given').isIn(stringArr);
-    },
-
-    localStrategy: new LocalStrategy(
-        function(username, password, done) {
-
-            var user = module.exports.findByUsername(username);
-
-            if(!user) {
-                done(null, false, { message: 'Incorrect username.' });
-            }
-            else if(user.password != password) {
-                done(null, false, { message: 'Incorrect username.' });
-            }
-            else {
-                return done(null, user);
-            }
-
-        }
-    ),
-
-    googleStrategy: function() {
-
-        return new GoogleStrategy({
-            returnURL: process.env.GOOGLE_RETURN_URL || "http://localhost:8000/auth/google/return",
-            realm: process.env.GOOGLE_REALM || "http://localhost:8000/"
-        },
-        function(identifier, profile, done) {
-            var user = module.exports.findOrCreateOauthUser('google', identifier);
-            done(null, user);
-        });
-    },
-
-    serializeUser: function(user, done) {
-        done(null, user.id);
-    },
-
-    deserializeUser: function(id, done) {
-        var user = module.exports.findById(id);
-
-        if(user)    { done(null, user); }
-        else        { done(null, false); }
     }
 };
+*/
+
+mongoose.model('User', UserSchema);

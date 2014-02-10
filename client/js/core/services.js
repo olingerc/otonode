@@ -57,6 +57,12 @@ angular.module('oto')
     return {
         getAll: function(success, error) {
             $http.get('/users').success(success).error(error);
+        },
+        remove: function(user, success, error) {
+           $http.delete ('/users/' + user._id).success(success).error(error);
+        },
+        add: function(user, success, error) {
+           $http.post ('/users', user).success(success).error(error);
         }
     };
 });

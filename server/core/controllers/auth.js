@@ -1,29 +1,26 @@
+'use strict';
+
+/**
+ * Load mongo models into mongoose
+ */
+
+require('../models/User');
+
+
+/**
+ * Module dependencies
+ */
+
 var passport =  require('passport')
-    , User = require('../models/User.js');
+  , mongoose =    require('mongoose')
+  , User =        mongoose.model('User')
+  , _ =           require('underscore')
+  , userRoles = require('../../../client/js/core/routingConfig').userRoles;
+
 
 module.exports = {
-    register: function(req, res, next) { //TODO: convert to add user. No register page, only admin can add user
-        try {
-            User.validate(req.body);
-        }
-        catch(err) {
-            return res.send(400, err.message);
-        }
-
-        User.addUser(req.body.username, req.body.password, req.body.role, function(err, user) {
-            if(err === 'UserAlreadyExists') return res.send(403, "User already exists");
-            else if(err)                    return res.send(500);
-
-            req.logIn(user, function(err) {
-                if(err)     { next(err); }
-                else        { res.json(200, { "role": user.role, "username": user.username }); }
-            });
-        });
-    },
-
     login: function(req, res, next) {
         passport.authenticate('local', function(err, user) {
-
             if(err)     { return next(err); }
             if(!user)   { return res.send(400); }
 

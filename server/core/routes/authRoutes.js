@@ -9,14 +9,13 @@ module.exports = [
     {
         path: '/auth/google',
         httpMethod: 'GET',
-        /*middleware: [passport.authenticate('google', {
+        middleware: [passport.authenticate('google', {
            failureRedirect: '/login',
            scope: [
                'https://www.googleapis.com/auth/userinfo.profile',
                'https://www.googleapis.com/auth/userinfo.email'
            ]
-        })]*/
-       middleware: [AuthCtrl.hey]
+        })]
     },
     {
         path: '/auth/google/return',

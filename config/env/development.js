@@ -6,8 +6,8 @@ module.exports = {
         name: 'OTO - Development'
     },
     google: {
-        clientID: 'APP_ID',
-        clientSecret: 'APP_SECRET',
-        callbackURL: 'http://localhost:3000/auth/google/callback'
+        clientID: '619795269050-gh24caheld794f57b2kd26i44dq1agfq.apps.googleusercontent.com',
+        clientSecret: 'dh1baFcADwvlmSSxkR-Idgt1',
+        callbackURL: 'http://localhost:3000/auth/google/return'
     }
 };

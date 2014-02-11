@@ -5,7 +5,8 @@ var mongoose = require('mongoose'),
     LocalStrategy = require('passport-local').Strategy,
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     User = mongoose.model('User'),
-    config = require('./config'); //TODO: check what is needed
+    config = require('./config') //TODO: check what is needed
+    , userRoles =   require('../client/js/core/routingConfig').userRoles;
 
 
 module.exports = function(passport) {
@@ -75,6 +76,7 @@ module.exports = function(passport) {
             callbackURL: config.google.callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
+           console.log('RRREETTTUUURRRNNN');
             User.findOne({
                 'google.id': profile.id
             }, function(err, user) {
@@ -84,7 +86,8 @@ module.exports = function(passport) {
                         email: profile.emails[0].value,
                         username: profile.username,
                         provider: 'google',
-                        google: profile._json
+                        google: profile._json,
+                        role: userRoles.user
                     });
                     user.save(function(err) {
                         if (err) console.log(err);

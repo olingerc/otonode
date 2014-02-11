@@ -1,14 +1,22 @@
-*System
-Why do I need to do: sudo npm install -g grunt-cli. Is this not indicated in the packages.json file? Maybe because it needs to be installed as sudo?
-Add ng-table to bower
-
-*Future:
-File uploads: https://github.com/felixge/node-formidable
-Use font awesome (the .fa things)
-Mean uses dynamic helpers. what are those?
-Make subnav more modular. Just give array with href and label to route.data.subnav
-
 *Core:
 - Validations for user
 - OAuth by google
+- Make subnav more modular. Just give array with href and label to route.data.subnav
+
+*Household
+- Look after ngTable
+
+------------------------------------
+
+*System
+Why do I need to do: sudo npm install -g grunt-cli. Is this not indicated in the packages.json file? Maybe because it needs to be installed as sudo?
+Add ng-table to bower
+Remove npm dev
+
+-----------------------------------
+
+*Comments:
+File uploads: https://github.com/felixge/node-formidable
+Use font awesome (the .fa things)
+Mean uses dynamic helpers. what are those?
 

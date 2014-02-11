@@ -7,19 +7,17 @@ div(ng-controller='UsersCtrl')
        .form-group
          input.form-control(placeholder='username', required='required', type='text', ng-model='user.username')
        .form-group
-         input.form-control(placeholder='full name', required='required', type='text', ng-model='user.name')
+         input.form-control(placeholder='full name (optional)', type='text', ng-model='user.name')
        .form-group
          input.form-control(placeholder='new password', required='required', type='password', ng-model='user.password')
        .form-group
-         .radio.radio-inline
-            label
-                input(type="radio", name="role", data-ng-model="user.role", id="adminRole", data-ng-value="userRoles.admin")
-                | Administrator
-         .radio.radio-inline
-            label
-                input(type="radio", name="role", data-ng-model="user.role", id="adminRole", data-ng-value="userRoles.user")
-                | Normal user
-       button.btn.btn-default(type='submit', ng-click='userFormAction(user)', ng-disabled='userForm.$invalid  || isUnchanged(user)')
+          label.radio-inline
+              input(type="radio", name="role", data-ng-model="user.role", id="adminRole", data-ng-value="userRoles.admin")
+              | Administrator
+          label.radio-inline
+              input(type="radio", name="role", data-ng-model="user.role", id="adminRole", data-ng-value="userRoles.user")
+              | User
+       button.btn.btn-primary(type='submit', ng-click='userFormAction(user)', ng-disabled='userForm.$invalid  || isUnchanged(user)')
          | {{userFormState.action}}
        button.btn.btn-default(ng-click='resetForm()')
          | reset

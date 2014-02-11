@@ -1,7 +1,7 @@
 angular.module('oto')
 .controller('UsersCtrl',
 ['$rootScope', '$scope', 'Users', 'Auth', function($rootScope, $scope, Users, Auth) {
-   
+
    /**
     * Initial values
     */
@@ -9,6 +9,7 @@ angular.module('oto')
    $scope.userRoles = Auth.userRoles;
    $scope.master = {};
    $scope.user = {};
+   $scope.user.role = $scope.userRoles.user;
    $scope.userFormState = {
       action: 'add',
       loadedIndex: null,
@@ -63,15 +64,16 @@ angular.module('oto')
    $scope.updateUser = function(index) {
       $scope.userFormState.action = 'save';
       $scope.user  = angular.copy($scope.users[index]);
+      $scope.user.role = $scope.userRoles[$scope.user.role.title]
       $scope.master = angular.copy($scope.user);
       $scope.userFormState.loadedIndex = index;
    };
 
    $scope.confirmUpdate = function() {
-      Users.update($scope.user, 
+      Users.update($scope.user,
          function(user) {
             $scope.users[$scope.userFormState.loadedIndex] = user;//$scope.user;
-            $scope.resetForm();            
+            $scope.resetForm();
          },
          function(err) {
             if (err == 'Username already exists') {
@@ -82,12 +84,13 @@ angular.module('oto')
             }
             else {
                console.log(err);
-            }            
+            }
          });
    };
 
    $scope.resetForm = function() {
       $scope.user = {};
+      $scope.user.role = $scope.userRoles.user;
       $scope.userFormState = {
          action: 'add',
          loadedIndex: null,

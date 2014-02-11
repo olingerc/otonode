@@ -1,5 +1,5 @@
 angular.module('oto')
 .controller('HomeCtrl',
-['$rootScope', function($rootScope) {
-
+['$scope', 'Auth', function($scope, Auth) {
+   $scope.accessLevels = Auth.accessLevels;
 }]);

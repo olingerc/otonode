@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('oto', ['ngCookies', 'ui.router'])
+angular.module('oto', ['ngCookies', 'ui.router', 'ngTable'])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
     var access = routingConfig.accessLevels;
@@ -52,26 +52,30 @@ angular.module('oto', ['ngCookies', 'ui.router'])
             templateUrl: 'home',
             controller:     'HomeCtrl'
         })
+        .state('user.automation', {
+            url: '/automation/',
+            templateUrl: 'automation',
+            controller: 'AutomationCtrl'
+        })
+
+        //Houehold
         .state('user.household', {
             abstract: true,
             url: '/household/',
-            templateUrl: 'household/layout'
-        })
-        .state('user.household.kitty', {
-            url: '',
-            templateUrl: 'household/kitty',
-            controller:     'HouseholdCtrl'
-        })
-        .state('user.household.nested', {
-            url: 'nested/',
-            templateUrl: 'household/nested'
-        })
-        .state('user.household.admin', {
-            url: 'admin/',
-            templateUrl: 'household/nestedAdmin',
+            template: "<ui-view/>",
             data: {
-                access: access.admin
+               subnav: 'household/subnav'
             }
+        })
+        .state('user.household.compensate', {
+            url: '',
+            templateUrl: 'household/compensate',
+            controller:     'CompensateCtrl'
+        })
+        .state('user.household.kitties', {
+            url: 'kitties/',
+            templateUrl: 'household/kitties',
+            controller:     'KittiesCtrl'
         });
 
     // Admin routes
@@ -127,7 +131,7 @@ angular.module('oto', ['ngCookies', 'ui.router'])
         return {
             'responseError': function(response) {
                 if(response.status === 401 || response.status === 403) {
-                    $location.path('/login');
+                    $location.path('/401');
                     return $q.reject(response);
                 }
                 else {
@@ -142,15 +146,22 @@ angular.module('oto', ['ngCookies', 'ui.router'])
    .run(['$rootScope', '$state', 'Auth', function ($rootScope, $state, Auth) {
         //init rootscope objects. I want to have separete objects for my modules
        $rootScope.core = {};
+       $rootScope.core.subnav = null;
        $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
+          //Handle subnav
+          if (toState.data.subnav) $rootScope.core.subnav = toState.data.subnav;
+          else $rootScope.core.subnav = null;
+
+          //Handle authorization
            if (!Auth.authorize(toState.data.access)) {
                $rootScope.error = "Seems like you tried accessing a route you don't have access to...";
                event.preventDefault();
 
                if(fromState.url === '^') {
-                   if(Auth.isLoggedIn())
+                   if(Auth.isLoggedIn()) {
                        $state.go('user.home');
-                   else {
+                       $rootScope.error = "";
+                   } else {
                        $rootScope.error = null;
                        $rootScope.core.savedLocation = toState.url;
                        $state.go('anon.login');

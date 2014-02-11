@@ -6,6 +6,7 @@ html(lang='en', data-ng-app='oto')
         link(rel='stylesheet', href='/css/app.css')
         link(href="/lib/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
         link(href="/lib/font-awesome/css/font-awesome.min.css", rel="stylesheet")
+        link(href="/lib/ng-table/ng-table.min.css", rel="stylesheet")
         link(href="/img/favicon.ico", rel="shortcut icon", type="image/x-icon")
 
     body(data-ng-cloak)
@@ -20,6 +21,8 @@ html(lang='en', data-ng-app='oto')
                             a(href='/') Home
                         li(data-access-level='accessLevels.user', active-nav='nestedTop')
                             a(href='/household') Household
+                        li(data-access-level='accessLevels.user', active-nav)
+                            a(href='/automation') Automation
                         li(data-access-level='accessLevels.admin', active-nav)
                             a(href='/admin') Admin
                         li(data-access-level='accessLevels.user')
@@ -29,18 +32,20 @@ html(lang='en', data-ng-app='oto')
                             | Welcome&nbsp;
                             strong {{ user.username }}&nbsp;
                             span.label(data-ng-class='{"label-info": user.role.title == userRoles.user.title, "label-success": user.role.title == userRoles.admin.title}') {{ user.role.title }}
-
+            ng-include(src="core.subnav")
         .container(data-ui-view)
         #alertBox.alert.alert-danger(data-ng-show="error")
             button(type="button", class="close", data-ng-click="error = null;") &times;
             strong Oh no!&nbsp;
             span(data-ng-bind="error")
 
+        //Dependencies
         script(src='/lib/jquery/jquery.min.js')
         script(src='/lib/underscore/underscore-min.js')
         script(src='/lib/angular/angular.min.js')
         script(src='/lib/angular-cookies/angular-cookies.min.js')
         script(src='/lib/angular-ui-router/release/angular-ui-router.min.js')
+        script(src='/lib/ng-table/ng-table.min.js')
         
         //Core
         script(src='/js/core/routingConfig.js')
@@ -49,34 +54,37 @@ html(lang='en', data-ng-app='oto')
         script(src='/js/core/services.js')
         script(src='/js/core/directives.js')
         
+        script(type="text/ng-template", id="404")
+            include ./404
+        script(type="text/ng-template", id="401")
+            include ./401
+
+        //Login
+        script(src='/js/login/LoginCtrl.js')
+        script(type="text/ng-template", id="login")
+            include ../login/login        
+
         //Admin
         script(src='/js/admin/AdminCtrl.js')
+        script(type="text/ng-template", id="admin")
+            include ../admin/admin
         
         //Home
         script(src='/js/home/HomeCtrl.js')
-        
-        //Household
-        script(src='/js/household/HouseholdCtrl.js')
-        
-        //Login
-        script(src='/js/login/LoginCtrl.js')
-
-        // Partial views... Load up front to make transitions smoother
-        script(type="text/ng-template", id="404")
-            include 404
-        script(type="text/ng-template", id="401")
-            include 401
-        script(type="text/ng-template", id="admin")
-            include ../admin/admin
         script(type="text/ng-template", id="home")
             include ../home/home
-        script(type="text/ng-template", id="login")
-            include ../login/login
-        script(type="text/ng-template", id="household/layout")
-            include ../household/layout
-        script(type="text/ng-template", id="household/kitty")
-            include ../household/kitty
-        script(type="text/ng-template", id="household/nested")
-            include ../household/nested
-        script(type="text/ng-template", id="household/nestedAdmin")
-            include ../household/nestedAdmin
+        
+        //Automation
+        script(src='/js/automation/AutomationCtrl.js')
+        script(type="text/ng-template", id="automation")
+            include ../automation/automation
+        
+        //Household
+        script(src='/js/household/CompensateCtrl.js')
+        script(src='/js/household/KittiesCtrl.js')
+        script(type="text/ng-template", id="household/subnav")
+            include ../household/subnav
+        script(type="text/ng-template", id="household/compensate")
+            include ../household/compensate
+        script(type="text/ng-template", id="household/kitties")
+            include ../household/kitties

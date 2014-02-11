@@ -49,3 +49,23 @@ body {
 .fade-show-setup.fade-show-start {
     opacity:1;
 }
+
+/*
+ * SUBNAV
+ *
+ *
+ */
+
+.navbar.subnav {
+   margin-bottom:0px;
+   border-radius: 0;
+   min-height:35px
+}
+
+.navbar.subnav li {
+   padding:0
+}
+
+.navbar.subnav a {
+   padding:7px 15px
+}

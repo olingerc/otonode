@@ -9,5 +9,5 @@ Uses angular and node
    *[MEAN stack](http://mean.io/)
 
 I try to keep things modular on both client and server. That means each module gets an own folder on the client and on the server.
-On client, module is configured in app.js (views preloaded in index.jade)
+On client, module is configured in app.js (views preloaded in index.jade with id to get jade-->html), don't forget to add links wherever needed, e.g. navigation header)
 On server, modules are loaded in server.js before the core routing

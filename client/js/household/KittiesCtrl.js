@@ -1,4 +1,4 @@
-angular.module('oto').controller('HouseholdCtrl', ['$scope', '$http', '$rootScope', function($scope, $http, $rootScope) {
+angular.module('oto').controller('KittiesCtrl', ['$scope', '$http', '$rootScope', function($scope, $http, $rootScope) {
    $http.get('/api/household/all').success(function(resp) {
       $scope.kitties = resp;
    });

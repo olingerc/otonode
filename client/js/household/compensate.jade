@@ -1,0 +1,38 @@
+h1 Compensate
+span Add month
+.btn-group
+  .btn.btn-default(ng-click='addBefore()') Before
+  .btn.btn-default(ng-click='addAfter()') After
+table.table(ng-table)
+  tr(ng-repeat='data in compData')
+    td(data-title='"Month"')
+      span(ng-if='!data.$edit') {{data.month}}
+      div(ng-if='data.$edit')
+        input.form-control(type='text', ng-model='data.month')
+    td(data-title='"Claire"')
+      span(ng-if='!data.$edit') {{data.incomeCK}}
+      div(ng-if='data.$edit')
+        input.form-control(type='text', ng-model='data.incomeCK')
+    td(data-title='"Claire RC"')
+      span(ng-if='!data.$edit') {{data.recalcCK}}
+      div(ng-if='data.$edit')
+        input.form-control(type='text', ng-model='data.recalcCK')
+    td(data-title='"Chris"')
+      span(ng-if='!data.$edit') {{data.incomeCO}}
+      div(ng-if='data.$edit')
+        input.form-control(type='text', ng-model='data.incomeCO')
+    td(data-title='"Chris RC"')
+      span(ng-if='!data.$edit') {{data.recalcCO}}
+      div(ng-if='data.$edit')
+        input.form-control(type='text', ng-model='data.recalcCO')
+    td(data-title='"Chris to Claire"')
+      span(ng-if='!data.$edit') {{data.chrisDue}}
+      div(ng-if='data.$edit')
+        input.form-control(type='text', ng-model='data.chrisDue')
+    td(data-title='"Paid"')
+      span(ng-if='!data.$edit') {{data.paidOn}}
+      div(ng-if='data.$edit')
+        input.form-control(type='date', ng-model='data.paidOn')
+    td(data-title='"Actions"', width='200')
+      a.btn.btn-default.btn-xs(ng-if='!data.$edit', href='', ng-click='data.$edit = true') Edit
+      a.btn.btn-primary.btn-xs(ng-if='data.$edit', href='', ng-click='data.$edit = false') Save

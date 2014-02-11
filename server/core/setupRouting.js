@@ -26,15 +26,17 @@ module.exports = function(app, routes) {
                 break;
         }
     });
+
+
+      function ensureRouteAuthorized(req, res, next) {
+          var role;
+          if(!req.user) role = userRoles.public;
+          else          role = req.user.role;
+
+          var accessLevel = _.findWhere(routes, { path: req.route.path }).accessLevel || accessLevels.public;
+
+          if(!(accessLevel.bitMask & role.bitMask)) return res.send(403);
+          return next();
+      }
 };
 
-function ensureRouteAuthorized(req, res, next) {
-    var role;
-    if(!req.user) role = userRoles.public;
-    else          role = req.user.role;
-
-    var accessLevel = _.findWhere(routes, { path: req.route.path }).accessLevel || accessLevels.public;
-
-    if(!(accessLevel.bitMask & role.bitMask)) return res.send(403);
-    return next();
-}

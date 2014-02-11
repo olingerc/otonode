@@ -1,16 +1,22 @@
 var passport =  require('passport')
     , AuthCtrl =  require('../controllers/auth')
     , UserCtrl =  require('../controllers/user')
-    , userRoles = require('../../../client/js/core/routingConfig').userRoles
     , accessLevels = require('../../../client/js/core/routingConfig').accessLevels;
 
-module.exports = routes = [
+module.exports = [
 
     // OAUTH
     {
         path: '/auth/google',
         httpMethod: 'GET',
-        middleware: [passport.authenticate('google')]
+        /*middleware: [passport.authenticate('google', {
+           failureRedirect: '/login',
+           scope: [
+               'https://www.googleapis.com/auth/userinfo.profile',
+               'https://www.googleapis.com/auth/userinfo.email'
+           ]
+        })]*/
+       middleware: [AuthCtrl.hey]
     },
     {
         path: '/auth/google/return',
@@ -20,6 +26,20 @@ module.exports = routes = [
             failureRedirect: '/login'
         })]
     },
+
+    /*
+    // Setting the google oauth routes
+    app.get('/auth/google', passport.authenticate('google', {
+        failureRedirect: '/signin',
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+    }), users.signin);
+
+    app.get('/auth/google/callback', passport.authenticate('google', {
+        failureRedirect: '/signin'
+    }), users.authCallback);*/
 
     // Local Auth
     {
@@ -57,23 +77,5 @@ module.exports = routes = [
         httpMethod: 'PUT',
         middleware: [UserCtrl.update],
         accessLevel: accessLevels.admin
-    },
-
-    // All other get requests should be handled by AngularJS's client-side routing system
-    {
-        path: '/*',
-        httpMethod: 'GET',
-        middleware: [function(req, res) {
-            var role = userRoles.public, username = '';
-            if(req.user) {
-                role = req.user.role;
-                username = req.user.username;
-            }
-            res.cookie('user', JSON.stringify({
-                'username': username,
-                'role': role
-            }));
-            res.render('index');
-        }]
     }
 ];

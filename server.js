@@ -81,17 +81,20 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 /**
- * CORE ROUTES
+ * DEFINE ROUTES
  */
-var routes = require('./server/core/routes/coreRoutes');
+
+// Core route: authentication api
+var routes = require('./server/core/routes/authRoutes');
+// Add module API ROUTES (plugin entry point, just add routes to this array)
+routes = routes.concat(require('./server/household/routes'));
+//Remaining routes are handled by angular
+routes = routes.concat(require('./server/core/routes/angularRoutes'));
+//Clean up routes
+routes = _.uniq(routes);
 
 /**
- * add API ROUTES
- */
-_.extend(routes, require('./server/household/routes'));
-
-/**
- * Load routes
+ * Setup routes
  */
 require('./server/core/setupRouting.js')(app, routes);
 

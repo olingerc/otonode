@@ -3,7 +3,7 @@ angular.module('oto').controller('LoginCtrl', ['$rootScope', '$scope', '$locatio
       loginError: false
    };
    $scope.rememberme = true;
-   
+
    $scope.login = function() {
       Auth.login({
             username: $scope.username,

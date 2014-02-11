@@ -17,12 +17,12 @@ body {
     float:right;padding:8px;
 }
 
-.fa.fa-twitter {
-    color:#00A7E7;
-}
-
-.fa.fa-facebook-square {
-    color:#3662A0;
+#alertBox {
+    position: fixed;
+    min-width: 75%;
+    left: 50%;
+    margin: 0 0 0 -37.5%;
+    top: 5px;
 }
 
 .fa.fa-google-plus-square {

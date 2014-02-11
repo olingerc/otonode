@@ -1,45 +1,125 @@
 'use strict';
 
-angular.module('oto', ['ngCookies', 'ngRoute'])
-.config(['$routeProvider', '$locationProvider', '$httpProvider', function ($routeProvider, $locationProvider, $httpProvider) {
+angular.module('oto', ['ngCookies', 'ui.router'])
+.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
     var access = routingConfig.accessLevels;
 
-   //Templates are preloaded with an id in index.jade
-    $routeProvider.when('/',
-        {
-            templateUrl:    'home',
-            controller:     'HomeCtrl',
-            access:         access.user
+    // Public routes
+    $stateProvider
+        .state('public', {
+            abstract: true,
+            template: "<ui-view/>",
+            data: {
+                access: access.public
+            }
+        })
+        .state('public.404', {
+            url: '/404/',
+            templateUrl: '404'
+        })
+        .state('public.401', {
+            url: '/401/',
+            templateUrl: '401'
         });
-    $routeProvider.when('/login',
-        {
-            templateUrl:    'login',
-            controller:     'LoginCtrl',
-            access:         access.anon
+
+    // Anonymous routes
+    $stateProvider
+        .state('anon', {
+            abstract: true,
+            template: "<ui-view/>",
+            data: {
+                access: access.anon
+            }
+        })
+        .state('anon.login', {
+            url: '/login/',
+            templateUrl: 'login',
+            controller: 'LoginCtrl'
         });
-    $routeProvider.when('/household',
-        {
-            templateUrl:    'household',
-            controller:     'HouseholdCtrl',
-            access:         access.user
+
+    // Regular user routes
+    $stateProvider
+        .state('user', {
+            abstract: true,
+            template: "<ui-view/>",
+            data: {
+                access: access.user
+            }
+        })
+        .state('user.home', {
+            url: '/',
+            templateUrl: 'home',
+            controller:     'HomeCtrl'
+        })
+        .state('user.household', {
+            abstract: true,
+            url: '/household/',
+            templateUrl: 'household/layout'
+        })
+        .state('user.household.kitty', {
+            url: '',
+            templateUrl: 'household/kitty',
+            controller:     'HouseholdCtrl'
+        })
+        .state('user.household.nested', {
+            url: 'nested/',
+            templateUrl: 'household/nested'
+        })
+        .state('user.household.admin', {
+            url: 'admin/',
+            templateUrl: 'household/nestedAdmin',
+            data: {
+                access: access.admin
+            }
         });
-    $routeProvider.when('/admin',
-        {
-            templateUrl:    'admin',
-            access:         access.admin
+
+    // Admin routes
+    $stateProvider
+        .state('admin', {
+            abstract: true,
+            template: "<ui-view/>",
+            data: {
+                access: access.admin
+            }
+        })
+        .state('admin.admin', {
+            url: '/admin/',
+            templateUrl: 'admin'
         });
-    $routeProvider.when('/401', 
-        {
-            templateUrl:    '401.html',
-            access:         access.public
+
+
+
+    $urlRouterProvider.otherwise('/404');
+
+    // FIX for trailing slashes. Gracefully "borrowed" from https://github.com/angular-ui/ui-router/issues/50
+    $urlRouterProvider.rule(function($injector, $location) {
+        if($location.protocol() === 'file')
+            return;
+
+        var path = $location.path()
+        // Note: misnomer. This returns a query object, not a search string
+            , search = $location.search()
+            , params
+            ;
+
+        // check to see if the path already ends in '/'
+        if (path[path.length - 1] === '/') {
+            return;
+        }
+
+        // If there was no search string / query params, return with a `/`
+        if (Object.keys(search).length === 0) {
+            return path + '/';
+        }
+
+        // Otherwise build the search string and return a `/?` prefix
+        params = [];
+        angular.forEach(search, function(v, k){
+            params.push(k + '=' + v);
         });
-    $routeProvider.when('/404',
-        {
-            templateUrl:    '404',
-            access:         access.public
-        });
-    $routeProvider.otherwise({redirectTo:'/404'});
+        return path + '/?' + params.join('&');
+    });
 
     $locationProvider.html5Mode(true);
 
@@ -59,22 +139,24 @@ angular.module('oto', ['ngCookies', 'ngRoute'])
 
 }])
 
-    .run(['$rootScope', '$location', '$http', 'Auth', 
-       function ($rootScope, $location, $http, Auth) {
+   .run(['$rootScope', '$state', 'Auth', function ($rootScope, $state, Auth) {
         //init rootscope objects. I want to have separete objects for my modules
-        $rootScope.core = {};
-        $rootScope.$on("$routeChangeStart", function (event, next, current) {
-            //Reset subnav
-            $rootScope.core.subnavurl = '';
-            $rootScope.error = null;
-            if (!Auth.authorize(next.access)) {
-               if(Auth.isLoggedIn()) {
-                  $location.path('/401').replace(); //tell user that he is not allowed
-               } else {
-                  $rootScope.core.savedLocation = $location.url();
-                  $location.path('/login');
+       $rootScope.core = {};
+       $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
+           if (!Auth.authorize(toState.data.access)) {
+               $rootScope.error = "Seems like you tried accessing a route you don't have access to...";
+               event.preventDefault();
+
+               if(fromState.url === '^') {
+                   if(Auth.isLoggedIn())
+                       $state.go('user.home');
+                   else {
+                       $rootScope.error = null;
+                       $rootScope.core.savedLocation = toState.url;
+                       $state.go('anon.login');
+                   }
                }
-            }
-        });
+           }
+       });
 
     }]);

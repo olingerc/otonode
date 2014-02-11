@@ -74,3 +74,45 @@ body {
    margin-top:0;
    margin-bottom:0;
 }
+
+
+
+/*
+ * WATCHLIST
+ */
+
+.morepadding {
+   margin-bottom:15px
+}
+
+.seriesThumb {
+   max-height:98px; /*keeps fixed height for all list-ite,s*/
+   width:100%;
+   margin: 4px 0;
+}
+
+.removeSeriesBtn{
+   position:absolute;
+   top:0;
+   right:0;
+}
+
+.episodeTable {
+   max-height:100px;
+   overflow-y: auto;
+   overflow-x:hidden
+
+}
+
+.episodeTable tr.activeBold{
+   font-weight:bold
+}
+
+.episodeTable td.lastAired {
+   background-color: #3276b1;
+   color:white
+}
+
+.successImp {
+   background-color: #dff0d8 !important;
+}

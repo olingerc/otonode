@@ -1,0 +1,77 @@
+.row.morepadding
+  .col-md-12
+    form.form-inline(role='form', ng-submit='searchSeries()')
+      .form-group
+        input#searchInut.form-control(ng-model='query', type='text', placeholder='enter name')
+      button.btn.btn-default(type='submit')
+        span.glyphicon.glyphicon-search
+      .btn-group
+        button.btn.btn-default(type='button', ng-class='{active: searchFor == "tvshows"}', ng-click='setSearchFor("tvshows")') TV Shows
+        button.btn.btn-default(type='button', ng-class='{active: searchFor == "movies"}', ng-click='setSearchFor("movies")') Movies
+.row(ng-show='showSearchResults')
+  .col-md-12
+    span(ng-show='searching') Searching...
+.row(ng-show='showSearchResults')
+  .col-md-12
+    // Search result
+    h3(ng-show='showSearchResults && !searching')
+      | Search Results
+      button.btn.btn-success(ng-show='showSearchResults && !searching', ng-click='showSearchResults=false') Close
+    .list-group.col-xs-12.col-sm-12.col-md-12.col-lg-12(ng-if='ng-if', searchresults.length='searchResults.length > 0', ng-hide='searching')
+      a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in searchResults')
+        h4.list-group-item-heading {{series.name}}
+        img.seriesThumb.img-rounded.pull-left(ng-src='{{series.thumb}}')
+        dl.dl-horizontal.pull-left
+          dt First aired
+          dd {{series.firstAired}}
+          dt Status
+          dd {{series.status}}
+          dt Next episode
+          dd {{series.nextEpisode}}
+          dt Rating
+          dd {{series.rating}}
+          dt Seasons
+          dd {{series.totalSeasons}}
+          dt Episodes
+          dd {{series.totalEpisodes}}
+          dt Runtime
+          dd {{series.runtime}}
+        button.btn.btn-success.pull-right(ng-click='addSeries(series)') Add
+        .clearfix
+    // No results
+    p(ng-if='searchResults.length == 0', ng-hide='searching') No results for {{query}}
+.row(ng-show='loadingCollection')
+  .col-md-12
+    span Loading collection...
+.row(ng-hide='loadingCollection || seriesCollection.length == 0')
+  .col-md-12
+    // Series collection
+    h3 Series Collection
+    .list-group.col-xs-12.col-sm-12.col-md-12.col-lg-12(ng-if='ng-if', seriescollection.length='seriesCollection.length > 0')
+      a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in seriesCollection')
+        h4.list-group-item-heading.pull-left
+        img.seriesThumb.img-rounded(ng-src='{{series.thumb}}')
+        h5.pull-left
+          span.text-muted {{series.name | limitTo:40}}
+          span.label.label-primary(ng-if='ng-if', series.totalseasons='series.totalSeasons > 1')
+            | {{series.totalSeasons}} seasons
+          span.label.label-primary(ng-if='series.totalSeasons == 1') 1 season
+          span.label.label-primary(ng-if='series.nextEpisode != null') Next: {{series.nextEpisode}}
+          span.label.label-warning(ng-if='series.nextEpisode == null') Ended
+        button.removeSeriesBtn.btn.btn-success.btm-sm.pull-right(ng-click='removeSeries($index)')
+          span.glyphicon.glyphicon-trash
+        .clearfix
+        .episodeTable
+          table.table.table-condensed
+             tr(ng-repeat='ep in series.episodelist | reverse', ng-click='setActiveEpisode(series, ep)', ng-class='{"activeBold": series.activeEpisode==ep}')
+              td(ng-class='{"warning": ep == series.lastdownloaded, "successImp": ep == series.lastwatched, "success": ep == series.lastwatched, "lastAired":epIsNextAired(series, ep)}')
+                small.text-muted(ng-if='ep == series.lastwatched') W
+                small.text-warning(ng-if='ep == series.lastdownloaded') D
+                small.text-warning(ng-if='epIsNextAired(series, ep)') Next aired
+                | {{ep}}
+        .btn-group.pull-right
+          .btn.btn-default(ng-click='setLastDownloaded(series)') LD
+          .btn.btn-default(ng-click='setLastWatched(series)') LW
+.row(ng-hide='ng-hide', loadingcollection='loadingCollection', seriescollection.length='seriesCollection.length > 0')
+  .col-md-12
+    span No series in your collection

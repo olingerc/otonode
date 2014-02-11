@@ -20,6 +20,8 @@ html(lang='en', data-ng-app='oto')
                         li(data-access-level='accessLevels.user', active-nav)
                             a(href='/') Home
                         li(data-access-level='accessLevels.user', active-nav='nestedTop')
+                            a(href='/watchlist') Watchlist
+                        li(data-access-level='accessLevels.user', active-nav='nestedTop')
                             a(href='/household') Household
                         li(data-access-level='accessLevels.user', active-nav)
                             a(href='/automation') Automation
@@ -78,6 +80,13 @@ html(lang='en', data-ng-app='oto')
         script(src='/js/automation/AutomationCtrl.js')
         script(type="text/ng-template", id="automation")
             include ../automation/automation
+            
+        //Watchlist
+        script(src='/js/watchlist/SeriesCtrl.js')
+        script(type="text/ng-template", id="watchlist/subnav")
+            include ../watchlist/subnav
+        script(type="text/ng-template", id="watchlist/series")
+            include ../watchlist/series
         
         //Household
         script(src='/js/household/CompensateCtrl.js')

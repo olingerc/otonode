@@ -52,6 +52,8 @@ angular.module('oto', ['ngCookies', 'ui.router', 'ngTable'])
             templateUrl: 'home',
             controller:     'HomeCtrl'
         })
+
+        //Auto
         .state('user.automation', {
             url: '/automation/',
             templateUrl: 'automation',
@@ -76,6 +78,21 @@ angular.module('oto', ['ngCookies', 'ui.router', 'ngTable'])
             url: 'kitties/',
             templateUrl: 'household/kitties',
             controller:     'KittiesCtrl'
+        })
+
+        //Watchlist
+        .state('user.watchlist', {
+            abstract: true,
+            url: '/watchlist/',
+            template: "<ui-view/>",
+            data: {
+               subnav: 'watchlist/subnav'
+            }
+        })
+        .state('user.watchlist.series', {
+            url: 'series/',
+            templateUrl: 'watchlist/series',
+            controller:     'SeriesCtrl'
         });
 
     // Admin routes
@@ -94,7 +111,11 @@ angular.module('oto', ['ngCookies', 'ui.router', 'ngTable'])
 
 
 
+    $urlRouterProvider.when('/watchlist/', '/watchlist/series');
+
     $urlRouterProvider.otherwise('/404');
+
+
 
     // FIX for trailing slashes. Gracefully "borrowed" from https://github.com/angular-ui/ui-router/issues/50
     $urlRouterProvider.rule(function($injector, $location) {

@@ -69,3 +69,8 @@ body {
 .navbar.subnav a {
    padding:7px 15px
 }
+
+.navbar.subnav ul.navbar-nav {
+   margin-top:0;
+   margin-bottom:0;
+}

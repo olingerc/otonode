@@ -1,6 +1,7 @@
 *Core:
 - Validations for user
 - OAuth by google
+- Super safe cookie rememberme system
 - Make subnav more modular. Just give array with href and label to route.data.subnav
 
 *Household

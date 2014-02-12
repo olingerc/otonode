@@ -9,5 +9,11 @@ module.exports = [
       httpMethod: 'GET',
       middleware: [seriesCtrl.search],
       accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/watchlist/series/thumb/:seriesid',
+      httpMethod: 'GET',
+      middleware: [seriesCtrl.thumb],
+      accessLevel: accessLevels.user
    }
 ];

@@ -4,19 +4,10 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
     * Initial
     */
 
-   $scope.searchFor = 'tvshows';
    $scope.showSearchResults = false;
    $scope.query = 'Dexter';
    $scope.searchResults = [];
    $scope.searching = false;
-
-   /*
-    * Common Series/Movies
-    */
-
-   $scope.setSearchFor = function(type) {
-      $scope.searchFor = type;
-   };
 
    /*
     * Series

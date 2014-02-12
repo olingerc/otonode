@@ -42,7 +42,7 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
       if ($scope.query) {
          $scope.searching = true;
          $scope.showSearchResults = true;
-         $http.get('/searchseries', {params:{'query':$scope.query}})
+         $http.get('/api/watchlist/series/search', {params:{'query':$scope.query}})
             .success(function(response) {
                $scope.searchResults = response;
                $scope.searching = false;

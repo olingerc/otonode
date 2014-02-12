@@ -10,7 +10,8 @@
     "validator": "~1.1.1",
     "passport-google": "~0.3.0",
     "mongoose": "~3.8.6",
-    "passport-google-oauth": "~0.1.5"
+    "passport-google-oauth": "~0.1.5",
+    "thetvdb-api": "https://github.com/olingerc/thetvdb-api/tarball/master"
   },
   "repository": {
     "type": "git",

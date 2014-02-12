@@ -86,8 +86,13 @@ app.use(passport.session());
 
 // Core route: authentication api
 var routes = require('./server/core/routes/authRoutes');
+
+
 // Add module API ROUTES (plugin entry point, just add routes to this array)
 routes = routes.concat(require('./server/household/routes'));
+routes = routes.concat(require('./server/watchlist/routes'));
+
+
 //Remaining routes are handled by angular
 routes = routes.concat(require('./server/core/routes/angularRoutes'));
 //Clean up routes

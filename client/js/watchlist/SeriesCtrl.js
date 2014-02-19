@@ -48,7 +48,7 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    $scope.addSeries = function(show) {
       if ($scope.seriesCollection.indexOf(show) < 0) {
          //TODO Allow only one object with same series name. indexOf not good for new search with same name
-         $http.post('/addseries', {show:show})
+         $http.post('/api/watchlist/series/addseries', {show:show})
             .success(function(show) {
                $scope.seriesCollection.push(show);
             })

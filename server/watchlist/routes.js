@@ -15,5 +15,11 @@ module.exports = [
       httpMethod: 'GET',
       middleware: [seriesCtrl.thumb],
       accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/watchlist/series/addseries',
+      httpMethod: 'POST',
+      middleware: [seriesCtrl.addseries],
+      accessLevel: accessLevels.user
    }
 ];

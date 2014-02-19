@@ -4,7 +4,7 @@
  * Load mongo models into mongoose
  */
 
-//require('../models/series');
+require('../models/models.js');
 
 /**
  * Module dependencies
@@ -18,7 +18,9 @@ var mongoose = require('mongoose'),
    _ = require("underscore"),
    http = require('http'),
    fs = require('fs'),
-   async = require("async");
+   async = require("async"),
+   Show =        mongoose.model('Show'),
+   Collection =        mongoose.model('Collection');
 
 
 exports.search = function(req, res) {
@@ -100,3 +102,24 @@ var saveImageFromTVDB = function(show, imageSavedCallback) {
       }
    });
 };
+
+exports.addseries = function(req, res) {
+   var show = req.body.show;
+   var showid = show.id;
+   var show = new Show({
+      tvdbid: showid
+   });
+   
+   var collection = new Collection();
+   
+   show.save(function() {
+      collection.shows.push(show);
+      collection.save(function() {
+             res.send('ok', 201);  
+      });
+
+   });
+   
+
+};
+

@@ -40,31 +40,32 @@
   .col-md-12
     // Series collection
     h3 Series Collection
-    .list-group.col-xs-12.col-sm-12.col-md-12.col-lg-12(ng-if='ng-if', seriescollection.length='seriesCollection.length > 0')
+    .list-group.col-xs-12.col-sm-12.col-md-12.col-lg-12(ng-if='seriesCollection.length> 0')
       a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in seriesCollection')
         h4.list-group-item-heading.pull-left
-        img.seriesThumb.img-rounded(ng-src='{{series.thumb}}')
+        img.seriesThumb.img-rounded(ng-src='/api/watchlist/series/thumb/{{series.seriesid}}')
         h5.pull-left
-          span.text-muted {{series.name | limitTo:40}}
-          span.label.label-primary(ng-if='ng-if', series.totalseasons='series.totalSeasons > 1')
+          span.text-muted {{series.SeriesName | limitTo:40}}&nbsp;
+          span.label.label-primary(ng-if='series.totalSeasons > 1')
             | {{series.totalSeasons}} seasons
+          &nbsp;
           span.label.label-primary(ng-if='series.totalSeasons == 1') 1 season
           span.label.label-primary(ng-if='series.nextEpisode != null') Next: {{series.nextEpisode}}
-          span.label.label-warning(ng-if='series.nextEpisode == null') Ended
-        button.removeSeriesBtn.btn.btn-success.btm-sm.pull-right(ng-click='removeSeries($index)')
+          span.label.label-warning(ng-if='series.nextEpisode == null') {{series.Status}}
+        button.removeSeriesBtn.btn.btn-success.btm-sm.pull-right(ng-click='removeSeries(series, $index)')
           span.glyphicon.glyphicon-trash
         .clearfix
         .episodeTable
           table.table.table-condensed
-             tr(ng-repeat='ep in series.episodelist | reverse', ng-click='setActiveEpisode(series, ep)', ng-class='{"activeBold": series.activeEpisode==ep}')
+             tr(ng-repeat='ep in series.episodeList|reverse', ng-click='setActiveEpisode(series, ep)', ng-class='{"activeBold": series.activeEpisode==ep}')
               td(ng-class='{"warning": ep == series.lastdownloaded, "successImp": ep == series.lastwatched, "success": ep == series.lastwatched, "lastAired":epIsNextAired(series, ep)}')
                 small.text-muted(ng-if='ep == series.lastwatched') W
                 small.text-warning(ng-if='ep == series.lastdownloaded') D
-                small.text-warning(ng-if='epIsNextAired(series, ep)') Next aired
+                small.text-warning(ng-if='epIsNextAired(series, ep)') Next aired&nbsp;
                 | {{ep}}
         .btn-group.pull-right
           .btn.btn-default(ng-click='setLastDownloaded(series)') LD
           .btn.btn-default(ng-click='setLastWatched(series)') LW
-.row(ng-hide='ng-hide', loadingcollection='loadingCollection', seriescollection.length='seriesCollection.length > 0')
+.row(ng-hide='loadingcollection || seriesCollection.length > 0')
   .col-md-12
     span No series in your collection

@@ -29,19 +29,19 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
     
 /**
- * User Schema
+ * show Schema
  */
 var showSchema = new Schema({
    tvdbid: String,
-   //owner = db.ReferenceField(User, required=True)
    lastwatched: String,
    lastdownloaded: String
 });
 
 /**
- * User Schema
+ * collection Schema
  */
 var collectionSchema = new Schema({
+      userid: String,
       shows: {
          type: [showSchema]
      }

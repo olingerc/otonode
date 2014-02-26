@@ -84,7 +84,7 @@ var saveImageFromTVDB = function(show, imageSavedCallback) {
    //Check if file exists
    fs.exists(dest, function(exists) {
       if (exists) {
-         return imageSavedCallback(null);
+         return imageSavedCallback(null, null);
       } else {
          //It does not. Download it
          try {
@@ -92,34 +92,216 @@ var saveImageFromTVDB = function(show, imageSavedCallback) {
             var request = http.get("http://thetvdb.com/banners/" + imageurl, function(response) {
                response.pipe(file);
                file.on('finish', function() {
-                  return imageSavedCallback(null);
+                  return imageSavedCallback(null, null);
                });
             });
          } catch (err) {
             console.log(err);
-            return imageSavedCallback(null);
+            return imageSavedCallback(err, null);
          }
       }
    });
 };
 
 exports.addseries = function(req, res) {
-   var show = req.body.show;
-   var showid = show.id;
-   var show = new Show({
-      tvdbid: showid
+   var showid = req.body.showid;
+   
+   //Get current user collection
+   var currentuser_id = req.session.passport.user;
+   Collection.findOne({userid:currentuser_id}, function(err, collection) {
+      if (err) {
+         console.log(err);
+      }
+      
+      if (!collection) {
+         var collection = new Collection({userid:currentuser_id});
+         collection.save(function() {
+            //We cereated a collection
+            addShow(showid, collection, function(show) {
+               prepareShowsCollectionJSON([show], function(results) {
+                  res.send(results[0], 201);               
+               });
+            });            
+         });        
+      } else {
+         //We have a collection
+         addShow(showid, collection, function(show) {
+            prepareShowsCollectionJSON([show], function(results) {
+               res.send(results[0], 201);               
+            });
+         });
+      }
    });
-   
-   var collection = new Collection();
-   
-   show.save(function() {
-      collection.shows.push(show);
-      collection.save(function() {
-             res.send('ok', 201);  
+    
+   function addShow(thisshowid, collection, cb) {
+      //TODO: check if sho already added
+      var show = new Show({
+         tvdbid: thisshowid
       });
-
-   });
-   
-
+      show.save(function() { //TODO: what? why use show again i should use save result
+         collection.shows.push(show);
+         collection.save(function(err) {
+            cb(show);
+         });
+      });       
+   }
 };
 
+
+exports.getcollection = function(req, res) {
+   var currentuser_id = req.session.passport.user;
+   Collection.findOne({userid:currentuser_id}, function(err, collection) {
+      if (err) {
+         console.log(err);
+      }
+      
+      if (!collection) {
+         //TODO: what to do here?
+         res.send('[]');  
+      } else {
+         //We have a collection
+        prepareShowsCollectionJSON(collection.shows, function(shows) {
+           res.send(shows);
+        });
+      }
+   });
+};
+
+function prepareShowsCollectionJSON(showsInCollection, allShowsPreparedCallback) {
+   async.map(showsInCollection, getSeriesFromTVDB, function (err, results) {
+      var showArray = [];
+      _.each(results, function(show) {
+         var preparedShow = compileShowDetails(show);
+         showArray.push(preparedShow);
+      });
+      
+      async.map(showArray, saveImageFromTVDB, function (err, results) {
+        allShowsPreparedCallback(showArray); //Give back the inital collect, because we did not change it. we just waited for all images to be saved
+      });
+      
+   });
+   
+}
+
+var getSeriesFromTVDB = function(showInCollection, showFoundCallback) {
+   var showid = showInCollection.tvdbid;
+   tvDB(key, proxy).getSeriesAllById(showid, function(err, tvdbres) {
+     if (err) {
+        console.log('ERROR');
+        console.log(err);
+        return showFoundCallback(null, null);
+     } else {
+        if (tvdbres.Data) {
+           //TODO: Hackedy-hack: keep mongo data
+           tvdbres.Data.lastwatched = showInCollection.lastwatched;
+           tvdbres.Data.lastdownloaded = showInCollection.lastdownloaded;
+           return showFoundCallback(null, tvdbres.Data);
+        } else {
+           return showFoundCallback(null, null);
+        }
+     }
+   });
+};
+
+function compileShowDetails(show) {
+   var preparedShow =_.pick(show.Series, 'id', 'SeriesName', 'IMDB_ID', 'banner', 'Status');
+   preparedShow.seriesid = preparedShow.id;
+   
+   //User settings
+   preparedShow.lastwatched = show.lastwatched;
+   preparedShow.lastdownloaded = show.lastdownloaded;
+
+   var stringArray=[],
+      found = false,
+      now = getDate(),
+      nextEpisode;
+   
+   _.each(show.Episode, function(episode) {
+      stringArray.push("S" + episode.SeasonNumber + "E" + episode.EpisodeNumber + " " + episode.FirstAired + " " + episode.EpisodeName);
+      
+      if (episode.FirstAired >= now && !found) {
+         nextEpisode = episode.FirstAired + ", S" + episode.SeasonNumber + "E" + episode.EpisodeNumber;
+         found = true;
+      }
+      
+   });
+   var lastEpisode = _.last(show.Episode);
+   preparedShow.totalSeasons = lastEpisode.SeasonNumber;      
+   preparedShow.episodeList = stringArray;
+   preparedShow.nextEpisode = nextEpisode;
+  
+   return preparedShow;
+}
+
+function getDate() {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+    return year + "-" + month + "-" + day;
+}
+
+exports.updateSeries = function(req, res) {
+   var currentuser_id = req.session.passport.user,
+      showid = req.body.showid,
+      lastWatched = req.body.lastwatched,
+      lastDownloaded = req.body.lastdownloaded;
+      
+      
+   Collection.findOne({userid:currentuser_id}, function(err, collection) {
+      if (err) {
+         console.log(err);
+      }
+      
+      if (!collection) {
+         //TODO: what to do here?
+         res.send('[]');  
+      } else {
+         //We have a collection
+         _.each(collection.shows, function(show) {
+            if (show.tvdbid = showid) {
+               //We have a show
+              if (lastWatched) {
+                 show.lastwatched = lastWatched;
+              }
+              if (lastDownloaded) {
+                 show.lastdownloaded = lastDownloaded;
+              }
+            }
+         });
+         collection.save(function(err) {//TODO: why no need to save show before saving collection?
+            res.send('OK');
+         });
+      }
+   });
+};
+
+exports.removeSeries = function(req, res) {
+   var currentuser_id = req.session.passport.user,
+      showid = req.body.showid;
+      
+      
+   Collection.findOne({userid:currentuser_id}, function(err, collection) {
+      if (err) {
+         console.log(err);
+      }
+      
+      if (!collection) {
+         //TODO: what to do here?
+         res.send('[]');  
+      } else {
+         //We have a collection
+         _.each(collection.shows, function(show) {
+            if (show.tvdbid = showid) {
+               //We have a show
+               collection.shows.splice(collection.shows.indexOf(show),1);
+            }
+         });
+         collection.save(function(err) {//TODO: why no need to save show before saving collection?
+            res.send('OK');
+         });
+      }
+   });
+};

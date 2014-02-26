@@ -17,7 +17,7 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    $scope.seriesCollection = [];
    $scope.loadingCollection = true;
    var getSeries = function() {
-         $http.get('/getseries')
+         $http.get('/api/watchlist/series/getcollection')
             .success(function(response) {
                $scope.seriesCollection = response;
                $scope.loadingCollection = false;
@@ -48,7 +48,7 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    $scope.addSeries = function(show) {
       if ($scope.seriesCollection.indexOf(show) < 0) {
          //TODO Allow only one object with same series name. indexOf not good for new search with same name
-         $http.post('/api/watchlist/series/addseries', {show:show})
+         $http.post('/api/watchlist/series/addseries', {showid:show.seriesid})
             .success(function(show) {
                $scope.seriesCollection.push(show);
             })
@@ -58,13 +58,19 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
       }
    };
 
-   $scope.removeSeries = function(showindex) {
-      $scope.seriesCollection.splice(showindex, 1);
+   $scope.removeSeries = function(show, showindex) {
+      $http.post('/api/watchlist/series/remove', {showid:show.seriesid})
+         .success(function(response) {
+            $scope.seriesCollection.splice(showindex, 1);
+         })
+         .error(function(response) {
+            console.log(response.error);
+         });
    };
 
    $scope.setLastDownloaded = function(show) {
       show.lastdownloaded=show.activeEpisode;
-         $http.post('/updateseries', {showid:show.id, lastdownloaded: show.activeEpisode})
+         $http.post('/api/watchlist/series/update', {showid:show.seriesid, lastdownloaded: show.activeEpisode})
             .success(function(response) {
                //console.log(response);
             })
@@ -75,7 +81,7 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
 
    $scope.setLastWatched = function(show) {
       show.lastwatched=show.activeEpisode;
-      $http.post('/updateseries', {showid:show.id, lastwatched: show.activeEpisode})
+      $http.post('/api/watchlist/series/update', {showid:show.seriesid, lastwatched: show.activeEpisode})
          .success(function(response) {
             //console.log(response);
          })

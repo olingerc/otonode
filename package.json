@@ -1,6 +1,7 @@
 {
   "name": "oto",
   "version": "0.0.1",
+  "license": "MIT",
   "dependencies": {
     "express": "~3.4.7",
     "jade": "~1.0.0",
@@ -21,21 +22,15 @@
   },
   "subdomain": "oto",
   "scripts": {
-    "start": "grunt dev"
+    "dev": "grunt dev"
   },
   "engines": {
     "node": "0.8.x",
     "npm": "1.2.x"
   },
   "devDependencies": {
-    "sinon": "~1.7.2",
-    "chai": "~1.6.1",
-    "mocha": "~1.10.0",
-    "supertest": "0.8.0",
-    "passport-stub": "0.1.5",
     "nodemon": "~1.0.12",
     "grunt": "~0.4.1",
-    "grunt-mocha-test": "~0.7.0",
     "grunt-env": "~0.4.1",
     "grunt-nodemon": "~0.2.0"
   }

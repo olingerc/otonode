@@ -12,3 +12,19 @@ I try to keep things modular on both client and server. That means each module g
 On client, module is configured in app.js (views preloaded in index.jade with id to get jade-->html), don't forget to add links wherever needed, e.g. navigation header)
 On server, modules are loaded in server.js before the core routing
 Configuration of modules goes into config/modules.js
+
+Prerequisites:
+from ubuntu: node, npm (special ppa)
+
+global npm:
+
+Producation:
+bower
+
+Development additionally:
+grunt-cli
+
+
+Run porudctio:
+export NODE_ENV='production'
+node server.js

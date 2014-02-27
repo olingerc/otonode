@@ -14,7 +14,8 @@ On server, modules are loaded in server.js before the core routing
 Configuration of modules goes into config/modules.js
 
 Prerequisites:
-from ubuntu: node, npm (special ppa)
+from ubuntu: 
+node, (special ppa from chris lea)
 
 global npm:
 
@@ -24,6 +25,9 @@ bower
 Development additionally:
 grunt-cli
 
+
+Install deps:
+npm install --production -l  (the -l is for production)
 
 Run porudctio:
 NODE_ENV=production node server.js

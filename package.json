@@ -22,7 +22,7 @@
   },
   "subdomain": "oto",
   "scripts": {
-    "dev": "grunt dev"
+    "start": "grunt dev"
   },
   "engines": {
     "node": "0.8.x",

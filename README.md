@@ -18,7 +18,7 @@ from ubuntu: node, npm (special ppa)
 
 global npm:
 
-Producation:
+Production:
 bower
 
 Development additionally:
@@ -26,5 +26,4 @@ grunt-cli
 
 
 Run porudctio:
-export NODE_ENV='production'
-node server.js
+NODE_ENV=production node server.js

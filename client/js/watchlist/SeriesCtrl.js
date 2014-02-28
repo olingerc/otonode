@@ -31,6 +31,7 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
 
    $scope.searchSeries = function() {
       if ($scope.query) {
+         $scope.originalQuery = angular.copy($scope.query);
          $scope.searching = true;
          $scope.showSearchResults = true;
          $http.get('/api/watchlist/series/search', {params:{'query':$scope.query}})

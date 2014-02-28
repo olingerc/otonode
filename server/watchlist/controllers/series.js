@@ -217,9 +217,12 @@ function compileShowDetails(show) {
       nextEpisode;
    
    _.each(show.Episode, function(episode) {
+      if (!_.isString(episode.FirstAired)) {
+         episode.FirstAired = 'NA'; //Sometimes empty dates are {}
+      }
       stringArray.push("S" + episode.SeasonNumber + "E" + episode.EpisodeNumber + " " + episode.FirstAired + " " + episode.EpisodeName);
       
-      if (episode.FirstAired >= now && !found) {
+      if (episode.FirstAired != 'NA' && episode.FirstAired >= now && !found) {
          nextEpisode = episode.FirstAired + ", S" + episode.SeasonNumber + "E" + episode.EpisodeNumber;
          found = true;
       }

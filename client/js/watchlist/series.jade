@@ -18,21 +18,21 @@
      a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in searchResults')
         h4.list-group-item-heading
           | {{series.SeriesName}}
+          button.removeSeriesBtn.btn.btn-success.pull-right(ng-click='addSeries(series)') Add
+          .clearfix
         img.seriesThumb.img-rounded.pull-left(ng-src='/api/watchlist/series/thumb/{{series.seriesid}}')
         dl.dl-horizontal.pull-left
            dt First aired
            dd {{series.FirstAired}}
            dt Overview
-           dd {{series.Overview}}
+           dd.overviewDD {{series.Overview}}
            dt Network
            dd {{series.Network}}
            dt Test
            dd: div(ng-href='http://www.imdb.com/{{series.IMDB_ID}}', target='_blank') IMDB
               
-         button.btn.btn-success.pull-right(ng-click='addSeries(series)') Add
-        .clearfix
     // No results
-    p(ng-if='searchResults.length == 0', ng-hide='searching') No results for {{query}}
+    p(ng-if='searchResults.length == 0', ng-hide='searching') No results for {{originalQuery}}
 .row(ng-show='loadingCollection')
   .col-md-12
     span Loading collection...
@@ -66,6 +66,6 @@
         .btn-group.pull-right
           .btn.btn-default(ng-click='setLastDownloaded(series)') LD
           .btn.btn-default(ng-click='setLastWatched(series)') LW
-.row(ng-hide='loadingcollection || seriesCollection.length > 0')
+.row(ng-hide='loadingCollection || seriesCollection.length > 0')
   .col-md-12
     span No series in your collection

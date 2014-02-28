@@ -18,7 +18,7 @@
      a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in searchResults')
         h4.list-group-item-heading
           | {{series.SeriesName}}
-          button.removeSeriesBtn.btn.btn-success.pull-right(ng-click='addSeries(series)') Add
+          button.removeSeriesBtn.btn.btn-success.pull-right(ng-click='addSeries(series)') {{addButtonText}}
           .clearfix
         img.seriesThumb.img-rounded.pull-left(ng-src='/api/watchlist/series/thumb/{{series.seriesid}}')
         dl.dl-horizontal.pull-left
@@ -64,8 +64,8 @@
                 small.text-warning(ng-if='epIsNextAired(series, ep)') Next aired&nbsp;
                 | {{ep}}
         .btn-group.pull-right
-          .btn.btn-default(ng-click='setLastDownloaded(series)') LD
-          .btn.btn-default(ng-click='setLastWatched(series)') LW
+          .btn.btn-default(ng-click='setLastDownloaded(series)', ng-disabled='series.activeEpisode==null') LD
+          .btn.btn-default(ng-click='setLastWatched(series)', ng-disabled='series.activeEpisode==null') LW
 .row(ng-hide='loadingCollection || seriesCollection.length > 0')
   .col-md-12
     span No series in your collection

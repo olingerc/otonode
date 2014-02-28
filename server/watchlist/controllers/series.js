@@ -19,7 +19,6 @@ var mongoose = require('mongoose'),
    http = require('http'),
    fs = require('fs'),
    async = require("async"),
-   Show =        mongoose.model('Show'),
    Collection =        mongoose.model('Collection');
 
 
@@ -134,16 +133,12 @@ exports.addseries = function(req, res) {
    });
     
    function addShow(thisshowid, collection, cb) {
-      //TODO: check if sho already added
-      var show = new Show({
-         tvdbid: thisshowid
+      //check if show already added, use unique in model and catch error, actually client already does it
+      collection.shows.push({tvdbid: thisshowid});
+      collection.save(function(err) {
+         //TODO: handle error when unique or other
+         cb({tvdbid: thisshowid});
       });
-      show.save(function() { //TODO: what? why use show again i should use save result
-         collection.shows.push(show);
-         collection.save(function(err) {
-            cb(show);
-         });
-      });       
    }
 };
 
@@ -264,7 +259,7 @@ exports.updateSeries = function(req, res) {
       } else {
          //We have a collection
          _.each(collection.shows, function(show) {
-            if (show.tvdbid = showid) {
+            if (show.tvdbid == showid) {
                //We have a show
               if (lastWatched) {
                  show.lastwatched = lastWatched;
@@ -282,6 +277,8 @@ exports.updateSeries = function(req, res) {
 };
 
 exports.removeSeries = function(req, res) {
+   //TODO: a speial embedded doc id exists, use that to remove instead of cycling
+   //http://mongoosejs.com/docs/2.8.x/docs/embedded-documents.html
    var currentuser_id = req.session.passport.user,
       showid = req.body.showid;
       
@@ -299,7 +296,7 @@ exports.removeSeries = function(req, res) {
          _.each(collection.shows, function(show) {
             if (show.tvdbid = showid) {
                //We have a show
-               collection.shows.splice(collection.shows.indexOf(show),1);
+               collection.shows[collection.shows.indexOf(show)].remove();
             }
          });
          collection.save(function(err) {//TODO: why no need to save show before saving collection?

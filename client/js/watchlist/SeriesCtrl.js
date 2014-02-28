@@ -8,6 +8,8 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    $scope.query = 'Dexter';
    $scope.searchResults = [];
    $scope.searching = false;
+   
+   $scope.addButtonText = 'Add';
 
    /*
     * Series
@@ -47,15 +49,21 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    };
 
    $scope.addSeries = function(show) {
-      if ($scope.seriesCollection.indexOf(show) < 0) {
-         //TODO Allow only one object with same series name. indexOf not good for new search with same name
+      var exists = _.find($scope.seriesCollection, function(inshow) {return inshow.seriesid==show.seriesid;});
+      if (!exists) {
+         $scope.addButtonText = '...';
          $http.post('/api/watchlist/series/addseries', {showid:show.seriesid})
             .success(function(show) {
+               $scope.addButtonText = 'Add';
                $scope.seriesCollection.push(show);
             })
             .error(function(response) {
+               $scope.addButtonText = 'Add';
                console.log(response.error);
             });
+      } else {
+         console.log('Already there');
+         //ODO: alert user
       }
    };
 
@@ -92,7 +100,11 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    };
 
    $scope.setActiveEpisode = function(series, ep) {
-      series.activeEpisode=ep;
+      if (series.activeEpisode==ep) {
+         series.activeEpisode=null;
+      } else {
+         series.activeEpisode=ep;
+      }
    };
 
    $scope.epIsNextAired = function(show, ep) {

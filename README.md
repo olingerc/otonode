@@ -15,7 +15,8 @@ Configuration of modules goes into config/modules.js
 
 Prerequisites:
 from ubuntu: 
-node, (special ppa from chris lea)
+node (ppa from chris lea)
+mongo (from developers themselves)
 
 global npm:
 
@@ -27,7 +28,7 @@ grunt-cli
 
 
 Install deps:
-npm install --production -l  (the -l is for production)
+npm install --production -l  (the -l is for local)
 
 Run porudctio:
 NODE_ENV=production node server.js

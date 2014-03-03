@@ -18,7 +18,9 @@
      a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in searchResults')
         h4.list-group-item-heading
           | {{series.SeriesName}}
-          button.removeSeriesBtn.btn.btn-success.pull-right(ng-click='addSeries(series)') {{addButtonText}}
+          button.removeSeriesBtn.btn.btn-success.pull-right(ng-click='addSeries(series)')
+            span(ng-if='savingAdd[series.seriesid]') {{savingAdd[series.seriesid]}}
+            span(ng-if='!savingAdd[series.seriesid]') Add
           .clearfix
         img.seriesThumb.img-rounded.pull-left(ng-src='/api/watchlist/series/thumb/{{series.seriesid}}')
         dl.dl-horizontal.pull-left
@@ -63,6 +65,7 @@
                 small.text-warning(ng-if='ep == series.lastdownloaded') D
                 small.text-warning(ng-if='epIsNextAired(series, ep)') Next aired&nbsp;
                 | {{ep}}
+        span.text-info(ng-show='savingUpdate[series.seriesid]') {{savingUpdate[series.seriesid]}}
         .btn-group.pull-right
           .btn.btn-default(ng-click='setLastDownloaded(series)', ng-disabled='series.activeEpisode==null') LD
           .btn.btn-default(ng-click='setLastWatched(series)', ng-disabled='series.activeEpisode==null') LW

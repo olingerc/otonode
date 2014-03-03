@@ -1,4 +1,4 @@
-angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
+angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http', '$timeout', function($scope, $rootScope, $http, $timeout) {
 
    /*
     * Initial
@@ -8,8 +8,8 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    $scope.query = 'Dexter';
    $scope.searchResults = [];
    $scope.searching = false;
-   
-   $scope.addButtonText = 'Add';
+   $scope.savingAdd = {};
+   $scope.savingUpdate = {}; 
 
    /*
     * Series
@@ -51,19 +51,22 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
    $scope.addSeries = function(show) {
       var exists = _.find($scope.seriesCollection, function(inshow) {return inshow.seriesid==show.seriesid;});
       if (!exists) {
-         $scope.addButtonText = '...';
+         $scope.savingAdd[show.seriesid] = 'Saving';
          $http.post('/api/watchlist/series/addseries', {showid:show.seriesid})
             .success(function(show) {
-               $scope.addButtonText = 'Add';
+               $scope.savingAdd[show.seriesid] = false;
                $scope.seriesCollection.push(show);
             })
             .error(function(response) {
-               $scope.addButtonText = 'Add';
-               console.log(response.error);
+               $scope.savingAdd[show.seriesid] = 'Error';
+               console.error(response.error);
             });
       } else {
+         $scope.savingAdd[show.seriesid] = 'Already in collection';
+         $timeout(function() {
+            $scope.savingAdd[show.seriesid] = false;
+         },3000);
          console.log('Already there');
-         //ODO: alert user
       }
    };
 
@@ -79,24 +82,28 @@ angular.module('oto').controller('SeriesCtrl', ['$scope', '$rootScope', '$http',
 
    $scope.setLastDownloaded = function(show) {
       show.lastdownloaded=show.activeEpisode;
+         $scope.savingUpdate[show.seriesid] = 'saving';
          $http.post('/api/watchlist/series/update', {showid:show.seriesid, lastdownloaded: show.activeEpisode})
             .success(function(response) {
-               //console.log(response);
+               $scope.savingUpdate[show.seriesid] = false;
             })
             .error(function(response) {
-               console.log(response.error);
+               $scope.savingUpdate[show.seriesid] = 'error';
+               console.error(response.error);
             });
    };
 
    $scope.setLastWatched = function(show) {
       show.lastwatched=show.activeEpisode;
+      $scope.savingUpdate[show.seriesid] = 'saving';
       $http.post('/api/watchlist/series/update', {showid:show.seriesid, lastwatched: show.activeEpisode})
-         .success(function(response) {
-            //console.log(response);
-         })
-         .error(function(response) {
-            console.log(response.error);
-         });
+            .success(function(response) {
+               $scope.savingUpdate[show.seriesid] = false;
+            })
+            .error(function(response) {
+               $scope.savingUpdate[show.seriesid] = 'error';
+               console.error(response.error);
+            });
    };
 
    $scope.setActiveEpisode = function(series, ep) {

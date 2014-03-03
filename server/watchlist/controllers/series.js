@@ -215,6 +215,9 @@ function compileShowDetails(show) {
       if (!_.isString(episode.FirstAired)) {
          episode.FirstAired = 'NA'; //Sometimes empty dates are {}
       }
+      if (!_.isString(episode.EpisodeName)) {
+         episode.EpisodeName = 'NA'; //Sometimes empty names are {}
+      }
       stringArray.push("S" + episode.SeasonNumber + "E" + episode.EpisodeNumber + " " + episode.FirstAired + " " + episode.EpisodeName);
       
       if (episode.FirstAired != 'NA' && episode.FirstAired >= now && !found) {
@@ -294,12 +297,12 @@ exports.removeSeries = function(req, res) {
       } else {
          //We have a collection
          _.each(collection.shows, function(show) {
-            if (show.tvdbid = showid) {
+            if (show.tvdbid == showid) {
                //We have a show
                collection.shows[collection.shows.indexOf(show)].remove();
             }
          });
-         collection.save(function(err) {//TODO: why no need to save show before saving collection?
+         collection.save(function(err) {
             res.send('OK');
          });
       }

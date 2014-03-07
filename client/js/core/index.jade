@@ -8,12 +8,12 @@ html(lang='en', data-ng-app='oto')
         link(href="/lib/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
         link(href="/lib/font-awesome/css/font-awesome.min.css", rel="stylesheet")
         link(href="/lib/ng-table/ng-table.css", rel="stylesheet")
-        
+
         link(href="/img/apple-touch-icon-120x120.png", sizes="120x120", rel="apple-touch-icon")
         link(href="/img/apple-touch-icon-76x76.png", sizes="76x76", rel="apple-touch-icon")
-        
+
         link(href="/img/favicon.ico", rel="shortcut icon", type="image/x-icon")
-        
+
         meta(name="apple-mobile-web-app-capable", content="yes")
         meta(name="apple-mobile-web-app-status-bar-style", content="black")
 
@@ -30,13 +30,15 @@ html(lang='en', data-ng-app='oto')
                 img.logo(src='/img/apple-touch-icon-120x120.png')
                 strong tO
                 small.text-muted &nbsp;Organize the Olingers
-            
+
             .collapse.navbar-collapse#bs-example-navbar-collapse-1
                ul.nav.navbar-nav
                   li(data-access-level='accessLevels.anon', active-nav)
                       a(href='/login') Log in
                   li(data-access-level='accessLevels.user', active-nav)
                       a(href='/') Home
+                  li(data-access-level='accessLevels.user', active-nav)
+                      a(href='/notes') Notes
                   li(data-access-level='accessLevels.user', active-nav='nestedTop')
                       a(href='/watchlist') Watchlist
                   li(data-access-level='accessLevels.user', active-nav='nestedTop')
@@ -45,13 +47,13 @@ html(lang='en', data-ng-app='oto')
                       a(href='/automation') Automation
                   li(data-access-level='accessLevels.admin', active-nav)
                       a(href='/admin') Admin
-            
+
                ul.nav.navbar-nav.navbar-right
                   li(data-access-level='accessLevels.user')
                      a(href="", data-ng-click="logout()")
-                        |Log out&nbsp;               
+                        |Log out&nbsp;
                         strong {{ user.username }}&nbsp;
-                  
+
             ng-include(src="core.subnav")
         .container.main(data-ui-view)
         #alertBox.alert.alert-danger(data-ng-show="error")
@@ -66,15 +68,19 @@ html(lang='en', data-ng-app='oto')
         script(src='/lib/angular/angular.min.js')
         script(src='/lib/angular-cookies/angular-cookies.min.js')
         script(src='/lib/angular-ui-router/release/angular-ui-router.min.js')
+        script(src='/lib/angular-file-upload/angular-file-upload.min.js')
         script(src='/lib/ng-table/ng-table.js')
-        
+        script(src='/ui-bootstrap-tpls.min.js')
+        script(src='/ui-utils.js')
+
         //Core
         script(src='/js/core/routingConfig.js')
         script(src='/js/core/app.js')
         script(src='/js/core/NavCtrl.js')
         script(src='/js/core/services.js')
         script(src='/js/core/directives.js')
-        
+        script(src='/js/core/helperFunctions.js')
+
         script(type="text/ng-template", id="404")
             include ./404
         script(type="text/ng-template", id="401")
@@ -83,30 +89,43 @@ html(lang='en', data-ng-app='oto')
         //Login
         script(src='/js/login/LoginCtrl.js')
         script(type="text/ng-template", id="login")
-            include ../login/login        
+            include ../login/login
 
         //Admin
         script(src='/js/admin/AdminCtrl.js')
         script(type="text/ng-template", id="admin")
             include ../admin/admin
-        
+
         //Home
         script(src='/js/home/HomeCtrl.js')
         script(type="text/ng-template", id="home")
             include ../home/home
-        
+
         //Automation
         script(src='/js/automation/AutomationCtrl.js')
         script(type="text/ng-template", id="automation")
             include ../automation/automation
-            
+
+        //Notes
+        script(src='/js/notes/CardFormModalCtrl.js')
+        script(src='/js/notes/CardListCtrl.js')
+        script(src='/js/notes/CardsFactory.js')
+        script(src='/js/notes/NotesViewCtrl.js')
+        script(src='/js/notes/StackListCtrl.js')
+        script(src='/js/notes/ThumbService.js')
+        script(src='/js/notes/StacksFactory.js')
+        script(src='/js/notes/notesDirectives.js')
+        script(src='/js/notes/notesFilters.js')
+        script(type="text/ng-template", id="notes/card-list")
+            include ../notes/card-list
+
         //Watchlist
         script(src='/js/watchlist/SeriesCtrl.js')
         script(type="text/ng-template", id="watchlist/subnav")
             include ../watchlist/subnav
         script(type="text/ng-template", id="watchlist/series")
             include ../watchlist/series
-        
+
         //Household
         script(src='/js/household/CompensateCtrl.js')
         script(src='/js/household/KittiesCtrl.js')

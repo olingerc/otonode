@@ -129,3 +129,146 @@ ul.nav.navbar-nav {margin-top:0 !important;}
    height:100px;
    overflow-y:scroll
 }
+
+/**
+Notes
+*/
+/*---STACKS---*/
+#stackactions .btn {margin: 5px 2px 0 0}
+.stacklist {margin-top:10px;width:100%; padding-right:0} /*TODO: use bootstrap rows*/
+
+/*---CARD Header--*/
+#stackHeader {padding-top:8px}
+#stackHeader h3 {margin:0px;margin-bottom:5px}
+
+.cards_order_options .active {
+   font-weight:bold;
+}
+
+/*---CARDS---*/
+.card {background: #f0f0f0;padding:10px 15px;}
+.card:hover {background:#e5e5e5}
+.card.active{
+  background: #428bca;
+  color: white;
+}
+
+.label-list {margin-top:-4px}
+.status-list {margin:0px}
+
+/*Thumblists*/
+.thumblist {margin:0}
+.cardFormContainerthumblist {margin: 10px 0 0 0 }
+.thumbContainer {
+   min-width:60px; /*prevent sflicker when witching from progress to real thumb*/
+}
+a.att_thumb_link {
+   text-decoration:none;
+   position:relative;
+   display:block;
+   float:left;
+   height:80px;
+}
+
+img.att_thumb {
+   height:80px;
+}
+img.att_thumb:hover {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.9);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.9);
+}
+small.att_thumb_overlay {
+  padding:2px;
+  position:absolute;
+  top:68%;
+  left:5px;
+  background:white;
+  opacity:0.8;
+  border-radius: 3px;
+  float:left;
+  color:#444
+}
+
+.attdelbutton {cursor:pointer}
+.attdelbutton:hover {color:red}
+
+/*--CARD FORM--*/
+#cardFormContainer {padding-bottom:5px}/*background ignores padding, thats whjy form looks larger than cardlist*/
+
+/*Add link*/
+#addLinkFormContainer {display:inline-block;width:300px}
+#addLinkFormInput {display:inline-block;width:100px;}
+#addLinkFormBtnOk {display:inline-block;}
+#addLinkFormBtnCancel {display:inline-block}
+
+@media (max-width: 1200px) { /*To prevent from being pulled right on small devices*/
+    .view_options > .pull-right {
+        float: none !important;
+        margin-bottom:15px; /*FIXME:HACK*/
+    }
+    .stack_actions.pull-right {
+        float: none !important; /*TODO: adjust margin for medium*/
+    }
+}
+
+.mute_link {
+   color: #999 !important /*text-muted of bootstrap did not work*/
+}
+
+
+#notesQuery {
+   width:150px;
+}
+
+#linkInput {
+   width:190px;
+   display:inline
+}
+
+/* ui-reset */
+.ui-resetwrap {
+        display: inline-block;
+        position: relative;
+}
+.ui-resetwrap input {
+    display:inline-block;
+    padding-right:22px;
+}
+.ui-reset {
+     display:inline;
+     cursor: pointer;
+     z-index: 2;
+     height: 100%;
+     font-size:15px;
+     color: #a5a5a5;
+     line-height:1.5em;
+     margin-left:-22px;
+     top:15px
+}
+
+.ui-reset i{
+   top:3px;
+}
+
+/*
+ * File upload hack: http://geniuscarrier.com/how-to-style-a-html-file-upload-button-in-pure-css/
+ *
+ */
+
+.fileUpload {
+   position: relative;
+   overflow: hidden;
+   margin: 10px;
+}
+.fileUpload input.upload {
+   position: absolute;
+   top: 0;
+   right: 0;
+   margin: 0;
+   padding: 0;
+   font-size: 20px;
+   cursor: pointer;
+   opacity: 0;
+   filter: alpha(opacity=0);

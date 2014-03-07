@@ -1,0 +1,276 @@
+<div id="cardView" class="row"
+   ng-controller="NotesViewCtrl">
+   <section id="sidebar" class="col-md-3 "
+      ng-controller="StackListCtrl">
+      <!--Title and actions-->
+      <!--Fix stacks-->
+      <div class="btn-group">
+         <div class="stack btn btn-default"
+            ng-click="listStackUser(floatingStack)"
+            ng-class="{true: 'active btn-primary', false: 'btn-default'}[stackIsActive(floatingStack.title)]">
+            {{floatingStack.title}}
+         </div>
+         <a title="Archive" id="archive_button" class="stack btn btn-default"
+            ng-class="{true: 'active btn-primary', false: 'btn-default'}[stackIsActive('Archive')]"
+            ng-click="listStackArchive()"><i class="glyphicon glyphicon-inbox"></i></a>
+         <div class="btn stack"
+            ng-class="{true: 'active btn-primary', false: 'btn-default'}[stackIsActive('All')]"
+            ng-click="listStackAll()">
+            All
+         </div>
+      </div>
+      <div class="btn-group pull-right stack_actions">
+         <button id="addStackButton" class="inline btn btn-success"
+            ng-click="startAddStack()">
+            <i class="glyphicon glyphicon-plus"></i>
+         </button>
+         <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+               ng-disabled='stackIsEditable()'>
+               <i class="glyphicon  glyphicon-list"></i><span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+               <li>
+                  <a ng-click="startDeleteStack(activestack)">Delete</a>
+               </li>
+               <li>
+                  <a ng-click="startRenameStack(activestack)">Rename</a>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div id="stackactions">
+         <form name="addStackForm" class='form-group'
+            ng-show="isVisibleStackAdd">
+            <small class="text-info">Add new</small>
+            <input placeholder="Title" name="addStackInput" type="text" class="form-control"
+               xng-focus="isVisibleStackAdd"
+               ng-model="addStackInput"
+               ng-required="isVisibleStackAdd">
+            <button type="submit" class="inline btn btn-default"
+               ng-click="stackActionError=false;addStack()"
+               ng-disabled="addStackForm.addStackInput.$invalid">
+               <i class="glyphicon glyphicon-ok"></i>
+            </button>
+            <button class="inline btn btn-default"
+               ng-click="isVisibleStackAdd=false;stackActionError=false">
+               <i class="glyphicon glyphicon-remove"></i>
+            </button>
+         </form>
+         <form name="renameStackForm"  class='form-group'
+            ng-show="isVisibleStackRename">
+            <small class="text-info">Rename {{stackToRename.title}} to</small>
+            <input name="renameStackInput" type="text" class="form-control inline" placeholder ='new title'
+               xng-focus="isVisibleStackRename"
+               ng-model="renameStackInput"
+               ng-required="isVisibleStackRename">
+            <button type="submit" class="inline btn btn-default"
+               ng-click="stackActionError=false;renameStack(stackToRename)"
+               ng-disabled="renameStackForm.renameStackInput.$invalid || renameStackInput == stackToRename.title">
+               <i class="glyphicon glyphicon-ok"></i>
+            </button>
+            <button class="inline btn btn-default"
+               ng-click="isVisibleStackRename=false;stackActionError=false">
+               <i class="glyphicon glyphicon-remove"></i>
+            </button>
+         </form>
+         <div  class='form-group'
+            ng-show="isVisibleStackDelete" >
+            <small class="text-danger">Delete {{stackToDelete.title}} ?</small>
+            <div class="clearfix"></div>
+            <button class="inline btn btn-danger"
+               ng-click="deleteStack(stackToDelete)">
+               <i class="glyphicon glyphicon-ok"></i>
+            </button>
+            <button class="inline btn btn-default"
+               ng-click="isVisibleStackDelete=false">
+               <i class="glyphicon glyphicon-remove"></i>
+            </button>
+         </div>
+         <small class="text-danger"
+            ng-show='stackActionError'>{{stackActionErrorMsg}}</small>
+      </div>
+
+      <!--User stacks-->
+      <ul class="stacklist list-group">
+         <li class="stack list-group-item"
+            ng-repeat="stack in stacks | orderBy:'createdat'"
+            ng-class="{true: 'active', false: ''}[stackIsActive(stack.title)]"
+            ng-click="listStackUser(stack)">
+            <span class="pull-left">{{stack.title}}</span>
+            <span class="pull-right badge" ng-bind="stackSizes[stack.id]"></span>
+            <div class='clearfix'></div>
+         </li>
+      </ul>
+      <hr>
+   </section>
+   <section id="middlebar" class="col-md-8 ">
+
+
+
+      <!--Cards list header-->
+      <div class='row'>
+            <div id='stackHeader' class='col-lg-3'>
+               <h3>{{activestack.title}}</h3>
+            </div>
+            <div class='col-lg-5'>
+               <ul class='list-inline'>
+                  <li>
+                     <button ng-click="startAddCard()" class="btn btn-success"
+                        ng-hide="inArchive()">
+                        Add Card
+                     </button>
+                  </li>
+                  <li>
+                     <input id='notesQuery' class="form-control" title="Includes attachment file names and urls" type="text" placeholder="Search stack"
+                     ng-model='query'
+                        oto-reset>
+                  </li>
+               </ul>
+            </div>
+            <div class='col-lg-4 view_options'>
+               <div class="btn-toolbar pull-right" role="toolbar">
+               <div class="btn-group">
+                  <button class="active btn btn-default"><i class="glyphicon  glyphicon-tasks"></i></button>
+                  <button class="btn btn-default"><i class="glyphicon  glyphicon-calendar"></i></button>
+                  <div class="btn-group cards_order_options pull-right">
+                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <i class="glyphicon  glyphicon-sort"></i><span class="caret"></span>
+                     </button>
+                     <ul class="dropdown-menu" role="menu">
+                        <li>
+                           <a
+                           ng-click="setOrder('-modifiedat')"
+                           ng-class="{true: 'active', false: ''}[orderProp=='-modifiedat']">Last modified</a>
+                        </li>
+                        <li>
+                           <a
+                           ng-click="setOrder('-createdat')"
+                           ng-class="{true: 'active', false: ''}[orderProp=='-createdat']">Last created</a>
+                        </li>
+                        <li>
+                           <a
+                           ng-click="setOrder('title')"
+                           ng-class="{true: 'active', false: ''}[orderProp=='title']">Title</a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class='btn-group'>
+                  <button type="button" class="btn btn-default"
+                     ng-disabled='processingCard || inArchive() || !isNotNull(activeCard.value)'
+                     ng-click="startEditCard(activeCard.value)">
+                     <i class="glyphicon  glyphicon-edit"></i>
+                  </button>
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                     ng-disabled='!isNotNull(activeCard.value)'>
+                     <i class="glyphicon  glyphicon-list"></i><span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                     <li>
+                        <a ng-class='{true: "mute_link"}[processingCard || inArchive()]' ng-click="startEditCard(activeCard.value)" ng-disabled='processingCard || inArchive()'>Edit</a>
+                     </li>
+
+                     <li class="dropdown-header">
+                        Move to stack
+                     </li>
+                     <li>
+                        <a ng-click="moveCard(activeCard.value, floatingStack.id)">Floating</a>
+                     </li>
+                     <li ng-repeat="stack in stacks">
+                        <a ng-click="moveCard(activeCard.value, stack.id)">{{stack.title}}</a>
+                     </li>
+                     <li class="divider"></li>
+                     <li class="dropdown-header">
+                        Other
+                     </li>
+                     <li>
+                        <a
+                        ng-click="removeCard(activeCard.value)">{{{true: 'Delete permanently', false: 'Archive'}[inArchive()]}}</a>
+                     </li>
+                     <li>
+                        <a
+                        ng-click="openDetails(activeCard.value)">Details</a>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!--Cards list-->
+
+      <div class='row'>
+         <div class='col-lg-12'>
+            <div ng-controller="CardListCtrl">
+               <div ng-repeat="cardGroup in cardGroups">
+                  <small class="text-muted" >{{cardGroup.label}}</small>
+                  <div class='list-group'>
+                     <div class="card list-group-item"
+                        ng-repeat="card in cardGroup.cards"
+                        ng-class="{true: 'active', false: ''}[cardIsActive(card)]"
+                        ng-click='selectCard(card)'
+                        ng-dblclick="startEditCard(card)">
+
+   <!--Start of card-->
+                        <!-- Card title row -->
+                        <h4 class='pull-left list-group-item-heading'>{{card.title}}</h4>
+                        <ul class="clearfix list-inline label-list"><!--just add pull-right to align right-->
+                           <li></li>
+                           <li class="label label-default" ng-show='activestack.title==="All"'>{{getStacktitle(card.stackid)}}</li>
+                           <li class="label label-default" ng-show="isNotNull(card.stacktitleafterarchived)">original: {{card.stacktitleafterarchived}}</li>
+                           <li title="due date" class="card_due_label label label-default" ng-show="isNotNull(card.duedate)">
+                              <small><i class="glyphicon  glyphicon-time"></i> {{card.duedate  | date:'yyyy-MM-dd'}}</small>
+                           </li>
+                           <li class="card_mod_label"
+                              ng-show="{{card.saving}}">
+                              <small class="text-danger">saving...</small>
+                           </li>
+                        </ul>
+
+                        <!--Card Content-->
+                        <p>{{card.content}}</p>
+
+                        <!--Tumbnails-->
+                        <ul class='list-inline thumblist'>
+                           <!--file Attachments-->
+                           <li ng-repeat="att in card.fileattachments">
+                              <a class="att_thumb_link" title="{{att.filename}}"
+                                 ng-href="{{thumbService.getServerId(att.clientid, att.id, '/download/')}}"
+                                 target="_self"
+                                 ng-init="thumbService.storeThumbnail(card.id, att.clientid, att.id, att)"
+                                 >
+                                 <div class='thumbContainer'>
+                                    <thumb-progress showprogress="thumbService.getProgress(att.clientid, att.id) != ''"></thumb-progress>
+                                    <img class="att_thumb img-rounded" ng-src="{{thumbService.getServerId(att.clientid, att.id, '/thumbnail/')}}" ng-show="thumbService.getProgress(att.clientid, att.id) == ''">
+                                 </div>
+                                 <small ng-show="thumbService.getProgress(att.clientid, att.id) !== ''" class="att_thumb_overlay text-muted text-center">
+                                    {{thumbService.getProgress(att.clientid, att.id)}}
+                                 </small>
+                               </a>
+
+                           </li>
+
+                           <!--url Attachments-->
+                           <li ng-repeat="att in card.urlattachments">
+                              <a class="att_thumb_link" title="{{att.url}}" target="_blank"
+                                 ng-href="{{att.url}}"
+                                 ng-init="thumbService.storeThumbnail(card.id, att.clientid, att.id, att)"
+                                 >
+                                 <div class='thumbContainer'>
+                                    <thumb-progress showprogress="thumbService.getProgress(att.clientid, att.id) != ''"></thumb-progress>
+                                    <img class="att_thumb img-rounded" ng-src="{{thumbService.getServerId(att.clientid, att.id, '/thumbnaillink/')}}" ng-show="thumbService.getProgress(att.clientid, att.id) == ''">
+                                 </div>
+                                 <small class="att_thumb_overlay"><i class="glyphicon  glyphicon-share-alt"></i></small>
+                              </a>
+                           </li>
+                        </ul>
+                     </div><!--End of list group item-->
+                  </div><!--End of list group-->
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+   <section id="rightbar" class="col-md-1"></section>
+</div>

@@ -1,6 +1,15 @@
 'use strict';
 
-angular.module('oto', ['ngCookies', 'ui.router', 'ngTable'])
+angular.module('oto', [
+    'ngCookies',
+    'ui.router',
+    'ngTable',
+    'oto.filters',
+    'oto.filters',
+    'ui.bootstrap',
+    'ui.utils',
+    'angularFileUpload'
+    ])
 .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
     var access = routingConfig.accessLevels;
@@ -58,6 +67,12 @@ angular.module('oto', ['ngCookies', 'ui.router', 'ngTable'])
             url: '/automation/',
             templateUrl: 'automation',
             controller: 'AutomationCtrl'
+        })
+
+        //Notes
+        .state('user.notes', {
+            url: '/notes/',
+            templateUrl: 'notes/card-list'
         })
 
         //Houehold

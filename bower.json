@@ -23,6 +23,7 @@
     "angular-cookies": "~1.2.11",
     "angular-ui-router": "0.2.8-bowratic-tedium",
     "jquery": "~2.1.0",
-    "ng-table": "~0.3.1"
+    "ng-table": "~0.3.1",
+    "angular-file-upload": "~0.3.1"
   }
 }

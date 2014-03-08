@@ -6,7 +6,7 @@ angular.module('oto')
 
    _us.storeThumbnail = function(cardid, clientid, serverid, att) {
       if (att) { //differentiate between ng-init on page load (att has serverid) or new att added by client (att has no serverid) for cardlist
-         if (!att.id) {
+         if (!att._id) {
             return;
          }
       }

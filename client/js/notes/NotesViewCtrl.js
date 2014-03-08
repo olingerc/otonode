@@ -24,7 +24,7 @@ angular.module('oto')
     ******************/
 
    $scope.inArchive = function() {
-      return $scope.activestack.id === 'archive' ? true : false;
+      return $scope.activestack._id === 'archive' ? true : false;
    };
 
    //Stacktitle by stackid. In the card I only store id
@@ -56,7 +56,7 @@ angular.module('oto')
       function (allStacks, floatingStack) {
          $scope.stacks = allStacks;
          $scope.floatingStack = floatingStack;
-         $scope.search = floatingStack.id; //show only cards of default stack
+         $scope.search = floatingStack._id; //show only cards of default stack
          $scope.activestack = floatingStack;
       }
    );
@@ -87,7 +87,7 @@ angular.module('oto')
    $scope.processingCard = false; //to enable/disable edit button
    $scope.$watch('activeCard.value', function(value) {
       if (value) {
-         if (thumbService.areAttsPending(value.id) || value.saving) {
+         if (thumbService.areAttsPending(value.id) || value.saving) { //TODO: id or _id?
             $scope.processingCard = true;
          } else {
             $scope.processingCard = false;
@@ -132,7 +132,7 @@ angular.module('oto')
       Cards.setActiveCard(null);
       if ($scope.inArchive()) {
          Cards.remove(
-            card.id,
+            card._id,
             function() {
                $scope.cards.splice($scope.cards.indexOf(card), 1);
             },
@@ -142,7 +142,7 @@ angular.module('oto')
          );
       } else {
          Cards.archive(
-            card.id,
+            card._id,
             $scope.getStacktitle(card.stackid),
             function(updatedCard) {
                $scope.cards[$scope.cards.indexOf(card)] = updatedCard;
@@ -156,7 +156,7 @@ angular.module('oto')
 
    $scope.moveCard = function(card, stackid) {
       Cards.move(
-         card.id,
+         card._id,
          stackid,
          function(updatedCard) {
             $scope.cards[$scope.cards.indexOf(card)] = updatedCard;

@@ -1,5 +1,7 @@
 'use strict';
 
+//TODO: there was an init_app in python notes
+
 var thesecards =
 [
     {

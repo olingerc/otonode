@@ -19,7 +19,7 @@ angular.module('oto')
 
    //Define state depending or new or add
    if (CardToEdit) {
-      if (thumbService.areAttsPending(CardToEdit.id)  || CardToEdit.saving) {
+      if (thumbService.areAttsPending(CardToEdit._id)  || CardToEdit.saving) {
          $modalInstance.close(); //safeguard
          return;
       }
@@ -47,7 +47,7 @@ angular.module('oto')
    } else {
       $scope.cardFormAction = 'new';
       $scope.cardFormCard = angular.copy(emptyCard);
-      $scope.cardFormCard.id = 'new' + makeid();
+      $scope.cardFormCard._id = 'new' + makeid();
    }
 
    /*************
@@ -100,8 +100,8 @@ angular.module('oto')
    var addCard = function() {
       $modalInstance.close();
       var newCard = $scope.cardFormCard;
-      var clientid = $scope.cardFormCard.id;
-      newCard.stackid = $scope.activestack.id;
+      var clientid = $scope.cardFormCard._id;
+      newCard.stackid = $scope.activestack._id;
       newCard.clientid = clientid;
       newCard.fileattachments = angular.copy($scope.fileAttachmentsList);
       newCard.urlattachments = angular.copy($scope.urlAttachmentsList);
@@ -134,14 +134,14 @@ angular.module('oto')
             var found = $filter('filter')($scope.cards, {clientid:card.clientid});
             if (found.length === 1) {
                //Update paramters calculated on server
-               found[0].id = card.id;
+               found[0]._id = card._id;
                found[0].createdat = card.createdat;
                found[0].modifiedat = card.modifiedat;
                found[0].saving = false;
                //found[0] = card; not good because of $$hash?
             } else {
                console.log(found);
-               alert('Error saving card:' +  card.id);
+               alert('Error saving card:' +  card._id);
             }
          }).error(function(error) {
             console.log(error);
@@ -180,7 +180,7 @@ angular.module('oto')
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
             data : $.param({
-               cardid : $scope.cardFormCard.id,
+               cardid : $scope.cardFormCard._id,
                array : JSON.stringify(filesToDelete)
             })
          });
@@ -202,14 +202,14 @@ angular.module('oto')
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
             data : $.param({
-               cardid : $scope.cardFormCard.id,
+               cardid : $scope.cardFormCard._id,
                array : JSON.stringify(urlsToDelete)
             })
          });
       }
 
       var updatedCardToSend = $scope.cardFormCard;
-      updatedCardToSend.clientid = $scope.cardFormCard.id;
+      updatedCardToSend.clientid = $scope.cardFormCard._id;
       updatedCardToSend.fileattachments = angular.copy($scope.fileAttachmentsList);
       updatedCardToSend.urlattachments = angular.copy($scope.urlAttachmentsList);
       updatedCardToSend.modifiedat = getDateWithTime();
@@ -222,19 +222,19 @@ angular.module('oto')
       //Display card in UI
       angular.extend($scope.originalCard, updatedCardToSend); //previoulsy _.
 
-      resolveUpdate[updatedCardToSend.id] = function() {
-         $http.put('/cards/' + updatedCardToSend.id, updatedCardToSend)
+      resolveUpdate[updatedCardToSend._id] = function() {
+         $http.put('/cards/' + updatedCardToSend._id, updatedCardToSend)
             .success(function(updatedCard) {
                //Update attachments in model (server already ok)
                updatedCard.saving = false;
 
-               var filtered = $filter('filter')($scope.cards, {id : updatedCard.id});
+               var filtered = $filter('filter')($scope.cards, {_id : updatedCard._id});
                if (filtered.length === 1) {
                   //Update paramters calculated on server
                   $scope.cards[$scope.cards.indexOf(filtered[0])] = updatedCard;
                } else {
                   console.log(found);
-                  alert('Error saving card:' +  card.id);
+                  alert('Error saving card:' +  card._id);
                }
             })
             .error(function(error) {
@@ -242,9 +242,9 @@ angular.module('oto')
             });
       };
 
-      if (thumbService.areAttsPending(updatedCardToSend.id) === false) {
-         resolveUpdate[updatedCardToSend.id].apply();
-         delete resolveUpdate[updatedCardToSend.id];
+      if (thumbService.areAttsPending(updatedCardToSend._id) === false) {
+         resolveUpdate[updatedCardToSend._id].apply();
+         delete resolveUpdate[updatedCardToSend._id];
       }
    };
 

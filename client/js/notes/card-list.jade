@@ -89,7 +89,7 @@
         ng-click='listStackUser(stack)'
         )
         span.pull-left {{stack.title}}
-        span.pull-right.badge(ng-bind='stackSizes[stack.id]')
+        span.pull-right.badge(ng-bind='stackSizes[stack._id]')
         .clearfix
 
   //Middle Row
@@ -156,9 +156,9 @@
               li.dropdown-header
                 | Move to stack
               li
-                a(ng-click='moveCard(activeCard.value, floatingStack.id)') Floating
+                a(ng-click='moveCard(activeCard.value, floatingStack._id)') Floating
               li(ng-repeat='stack in stacks')
-                a(ng-click='moveCard(activeCard.value, stack.id)') {{stack.title}}
+                a(ng-click='moveCard(activeCard.value, stack._id)') {{stack.title}}
               li.divider
               li.dropdown-header
                 | Other
@@ -204,31 +204,31 @@
                   li(ng-repeat='att in card.fileattachments')
                     a.att_thumb_link(
                       title='{{att.filename}}',
-                      ng-href='{{thumbService.getServerId(att.clientid, att.id, "/download/")}}',
+                      ng-href='{{thumbService.getServerId(att.clientid, att._id, "/download/")}}',
                       target='_self',
-                      ng-init='thumbService.storeThumbnail(card.id, att.clientid, att.id, att)'
+                      ng-init='thumbService.storeThumbnail(card._id, att.clientid, att._id, att)'
                       )
                       .thumbContainer
                         thumb-progress(showprogress='thumbService.getProgress(att.clientid, att.id) != ""')
                         img.att_thumb.img-rounded(
-                          ng-src='{{thumbService.getServerId(att.clientid, att.id, "/thumbnail/")}}',
-                          ng-show='thumbService.getProgress(att.clientid, att.id) == ""'
+                          ng-src='{{thumbService.getServerId(att.clientid, att._id, "/thumbnail/")}}',
+                          ng-show='thumbService.getProgress(att.clientid, att._id) == ""'
                           )
-                      small.att_thumb_overlay.text-muted.text-center(ng-show='thumbService.getProgress(att.clientid, att.id) !== ""')
-                        | {{thumbService.getProgress(att.clientid, att.id)}}
+                      small.att_thumb_overlay.text-muted.text-center(ng-show='thumbService.getProgress(att.clientid, att._id) !== ""')
+                        | {{thumbService.getProgress(att.clientid, att._id)}}
                   // url Attachments
                   li(ng-repeat='att in card.urlattachments')
                     a.att_thumb_link(
                       title='{{att.url}}',
                       target='_blank',
                       ng-href='{{att.url}}',
-                      ng-init='thumbService.storeThumbnail(card.id, att.clientid, att.id, att)'
+                      ng-init='thumbService.storeThumbnail(card._id, att.clientid, att._id, att)'
                       )
                       .thumbContainer
-                        thumb-progress(showprogress='thumbService.getProgress(att.clientid, att.id) != ""')
+                        thumb-progress(showprogress='thumbService.getProgress(att.clientid, att._id) != ""')
                         img.att_thumb.img-rounded(
-                          ng-src='{{thumbService.getServerId(att.clientid, att.id, "/thumbnaillink/")}}',
-                          ng-show='thumbService.getProgress(att.clientid, att.id) == ""'
+                          ng-src='{{thumbService.getServerId(att.clientid, att._id, "/thumbnaillink/")}}',
+                          ng-show='thumbService.getProgress(att.clientid, att._id) == ""'
                           )
                       small.att_thumb_overlay
                         span.glyphicon.glyphicon-share-alt

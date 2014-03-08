@@ -10,11 +10,11 @@ angular.module('oto')
       jQuery.each($scope.stacks, function(i, stack) {
          var count = 0;
          jQuery.each($scope.cards, function(i, card) {
-            if (card.stackid === stack.id && !card.archivedat) {
+            if (card.stackid === stack._id && !card.archivedat) {
                count++;
             }
          });
-         $scope.stackSizes[stack.id] = count;
+         $scope.stackSizes[stack._id] = count;
          //TODO: it works, but perfomrance? optimize the counting?, put broadcast on actions that could change this?
       });
    }, true);
@@ -61,10 +61,10 @@ angular.module('oto')
          function(stack) {
             $scope.stacks.push(stack);
             $scope.isVisibleStackAdd = false;
-            $scope.stackSizes[stack.id] = 0; //no need for a $watch on stacks here
+            $scope.stackSizes[stack._id] = 0; //no need for a $watch on stacks here
          },
          function(response) {
-            if (response.error.search('not unique') > 0) {
+            if (response.code == 11000) {
                $scope.stackActionError = true;
                $scope.stackActionErrorMsg = 'Stack with that title already exists';
             }
@@ -74,17 +74,17 @@ angular.module('oto')
 
    $scope.renameStack = function() {
       Stacks.rename(
-         $scope.stackToRename.id,
+         $scope.stackToRename._id,
          $scope.renameStackInput,
          function(renamedStack) {
             $scope.stacks[$scope.stacks.indexOf($scope.stackToRename)] = renamedStack;
             $scope.isVisibleStackRename = false;
-            if ($scope.$parent.activestack.id == renamedStack.id) {
+            if ($scope.$parent.activestack._id == renamedStack._id) {
                $scope.$parent.activestack.title = renamedStack.title;
             }
          },
          function(response) {
-         if (response.error.search('not unique') > 0) {
+         if (response.code == 11000) {
             $scope.stackActionError = true;
             $scope.stackActionErrorMsg = 'Stack with that title already exists';
          }
@@ -93,13 +93,13 @@ angular.module('oto')
 
    $scope.deleteStack = function() {
       //First archive cards in stack
-      var cardsInStack = $filter('filter')($scope.cards, {stackid:$scope.stackToDelete.id});
+      var cardsInStack = $filter('filter')($scope.cards, {stackid:$scope.stackToDelete._id});
       jQuery.each(cardsInStack, function(i, card) {
          Cards.archive(
-            card.id,
+            card._id,
             $scope.stackToDelete.title,
             function(updatedCard) {
-               var filtered = $filter('filter')($scope.cards, {id : updatedCard.id});
+               var filtered = $filter('filter')($scope.cards, {id : updatedCard._id});
                $scope.cards[$scope.cards.indexOf(filtered[0])] = angular.copy(updatedCard);
             },
             function(error) {
@@ -109,11 +109,11 @@ angular.module('oto')
       });
 
       Stacks.remove(
-         $scope.stackToDelete.id,
+         $scope.stackToDelete._id,
          function() {
             $scope.stacks.splice($scope.stacks.indexOf($scope.stackToDelete), 1);
             $scope.isVisibleStackDelete = false;
-            if ($scope.$parent.activestack.id == $scope.stackToDelete.id) {
+            if ($scope.$parent.activestack._id == $scope.stackToDelete._id) {
                $scope.listStackUser($scope.$parent.floatingStack);
             }
          },
@@ -126,7 +126,7 @@ angular.module('oto')
    //Filter cardsview by active stack
    $scope.listStackUser = function(stack) {
       Cards.setActiveCard(null);
-      $scope.$parent.search = stack.id;
+      $scope.$parent.search = stack._id;
       $scope.$parent.activestack = stack;
    };
 

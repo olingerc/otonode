@@ -11,15 +11,13 @@ var mongoose = require('mongoose'),
  */
 
 var StackSchema = new Schema({
-    title    : { type: String, required: true, trim: true } , //TODO:, max-length
-    owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    createdat    : { type: Date , index: true},
-    modifiedat    : { type: Date }
+    title:      { type: String, required: true, trim: true} , //TODO:, max-length
+    owner:      {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    createdat:  { type: Date , index: true},
+    modifiedat: { type: Date }
 });
 
 StackSchema.index({ title: 1, owner: 1}, { unique: true });
-//StackSchema.set('autoIndex', false); TODO: in prooduction only
-
 
 StackSchema.pre('save', function(next){
   this.modifiedat = new Date;
@@ -30,6 +28,33 @@ StackSchema.pre('save', function(next){
 });
 
 mongoose.model('Stack', StackSchema);
+
+
+/**
+ * Cards Schema
+ */
+
+var CardSchema = new Schema({
+    title:                  {type: String, required: true, trim: true} , //TODO:, max-length
+    content:                String,
+    stackid:                {type: mongoose.Schema.Types.ObjectId, ref: 'Stack'},
+    owner:                  {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    createdat:              {type: Date , index: true},
+    modifiedat:             {type: Date, index: true},
+    stacktitleafterarchived:String,
+    archivedat:             {type: Date},
+    duedate:                {type: Date}
+});
+
+CardSchema.pre('save', function(next){
+  this.modifiedat = new Date;
+  if ( !this.createdat ) {
+    this.createdat = new Date;
+  }
+  next();
+});
+
+mongoose.model('Card', CardSchema);
 
 
 

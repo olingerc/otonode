@@ -9,7 +9,7 @@ angular.module('oto')
 
    $scope.activestack = {
       'title':'',
-      'id':''
+      '_id':''
    };
 
    $scope.orderProp = '-modifiedat';
@@ -31,7 +31,7 @@ angular.module('oto')
    //TODO: put into stacks factory  and avoid stacks on parent scope? by using service in other controllers
    $scope.getStacktitle = function(stackid) {
       var stack = $scope.stacks.filter(function(stack) {
-         if (stack['id'] === stackid) {
+         if (stack['_id'] === stackid) {
             return stack;
          }
       });

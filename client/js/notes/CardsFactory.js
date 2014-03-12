@@ -5,16 +5,16 @@ angular.module('oto')
          $http.get('/api/notes/cards').success(success).error(error);
       },
       remove: function(cardid, success, error) {
-         $http.delete('/cards/' + cardid).success(success).error(error);
+         $http.delete('/api/notes/cards/' + cardid).success(success).error(error);
       },
-      archive: function(cardid, stachtitleafterarchive, success, error) {
-         $http.put('/cards/' + cardid, {
+      archive: function(cardid, stacktitleafterarchive, success, error) {
+         $http.put('/api/notes/cards/' + cardid, {
             'archivedat' : new Date().toString(),
-            'stacktitleafterarchived' : stachtitleafterarchive
+            'stacktitleafterarchived' : stacktitleafterarchive
          }).success(success).error(error);
       },
       move: function(cardid, stackid, success, error) {
-         $http.put('/cards/' + cardid, {
+         $http.put('/api/notes/cards/' + cardid, {
             'stackid' : stackid,
             'archivedat' : null,
             'stacktitleafterarchived' : null

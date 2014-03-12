@@ -132,11 +132,11 @@ angular.module('oto')
 
    $scope.listStackAll = function() {
       Cards.setActiveCard(null);
-      $scope.$parent.search = '';
+      $scope.$parent.search = null;
       $scope.$parent.activestack = {
          'owner':null,
          'title':'All',
-         'id':''
+         '_id': null
       };
    };
    $scope.listStackArchive = function() {
@@ -144,7 +144,7 @@ angular.module('oto')
       $scope.$parent.search = "archive";
       $scope.$parent.activestack = {
          'title':'Archive',
-         'id':'archive'
+         '_id':'archive'
       };
    };
 

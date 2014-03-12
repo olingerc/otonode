@@ -120,28 +120,28 @@ angular.module('oto')
       resolvePost[clientid] = function() {
          $http({
             method : 'POST',
-            url : '/cards/',
+            url : '/api/notes/cards/',
             headers : {
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
             data : $.param({
-               card : JSON.stringify(newCard),
+               card : newCard,
                fileattachments : JSON.stringify(newCard.fileattachments),
                urlattachments : JSON.stringify(newCard.urlattachments),
                clientid: clientid
             })
-         }).success(function(card) {
-            var found = $filter('filter')($scope.cards, {clientid:card.clientid});
+         }).success(function(response) {
+            var found = $filter('filter')($scope.cards, {clientid:response.clientid});
             if (found.length === 1) {
                //Update paramters calculated on server
-               found[0]._id = card._id;
-               found[0].createdat = card.createdat;
-               found[0].modifiedat = card.modifiedat;
+               found[0]._id = response.card._id;
+               found[0].createdat = response.card.createdat;
+               found[0].modifiedat = response.card.modifiedat;
                found[0].saving = false;
                //found[0] = card; not good because of $$hash?
             } else {
                console.log(found);
-               alert('Error saving card:' +  card._id);
+               alert('Error saving card:' +  response.card._id);
             }
          }).error(function(error) {
             console.log(error);
@@ -223,7 +223,7 @@ angular.module('oto')
       angular.extend($scope.originalCard, updatedCardToSend); //previoulsy _.
 
       resolveUpdate[updatedCardToSend._id] = function() {
-         $http.put('/cards/' + updatedCardToSend._id, updatedCardToSend)
+         $http.put('/api/notes/cards/' + updatedCardToSend._id, updatedCardToSend)
             .success(function(updatedCard) {
                //Update attachments in model (server already ok)
                updatedCard.saving = false;

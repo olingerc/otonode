@@ -37,6 +37,30 @@ module.exports = [
       middleware: [cards.getall],
       accessLevel: accessLevels.user
    },
+   {
+      path: '/api/notes/cards/:cardid',
+      httpMethod: 'GET',
+      middleware: [cards.get],
+      accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/notes/cards',
+      httpMethod: 'POST',
+      middleware: [cards.post],
+      accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/notes/cards/:cardid',
+      httpMethod: 'PUT',
+      middleware: [cards.put],
+      accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/notes/cards/:cardid',
+      httpMethod: 'DELETE',
+      middleware: [cards.delete],
+      accessLevel: accessLevels.user
+   },
 //Thumbnails
    {
       path: '/thumbnail/:attid',

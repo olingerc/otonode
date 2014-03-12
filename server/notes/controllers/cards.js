@@ -1091,6 +1091,131 @@ var thesecards =
     }
 ];
 
+/**
+ * Load mongo models into mongoose
+ */
+
+require('../models/models.js');
+
+var mongoose = require('mongoose'),
+    _ = require('underscore'),
+    Card = mongoose.model('Card');
+
+
 exports.getall = function(req, res) {
-    return res.send(thesecards);
+    var currentuser_id = req.session.passport.user;
+
+    Card
+    .find({owner: currentuser_id})
+    .sort({createdat:-1})
+    .exec(function (err, cards) {
+        if (err) {
+            console.log(err)
+            return res.send(error, 500)
+        }
+        res.send(cards, 200);
+    });
+};
+
+exports.get = function(req, res) {
+    var cardid = req.params.cardid;
+
+    Card.findOne({_id:cardid})
+    .exec(function(err, card) {
+        if (err) return res.send(err, 500);
+
+        res.send(card);
+
+    });
+};
+
+exports.post = function(req, res) {
+    var currentuser_id = req.session.passport.user,
+        title = req.body.card.title,
+        content = req.body.card.content,
+        duedate = req.body.card.duedate,
+        stackid = req.body.card.stackid;
+
+        console.log(req.body.card)
+
+    var clientid = req.body.clientid;
+
+    var card = new Card({title: title, content: content, stackid: stackid, owner: currentuser_id});
+
+    if (duedate) {
+        card.duedate = duedate;
+    }
+
+    card.save(function(err) {
+        if (err) {
+            console.log(err);
+            return res.send(err, 500);
+        }
+        res.send({card: card, clientid: clientid}, 201)
+    })
+};
+
+exports.put = function(req, res) {
+    var cardid = req.params.cardid,
+        newTitle = req.body.title,
+        newContent = req.body.content,
+        archivedat = req.body.archivedat,
+        duedate = req.body.duedate,
+        stacktitleafterarchived = req.body.stacktitleafterarchived,
+        stackid = req.body.stackid;
+
+    Card
+    .findById(cardid)
+    .exec(function (err, card) {
+        if (err) {
+            console.log(err);
+            return res.send(err, 500);
+        }
+        if (!card) {
+            console.log('card not found');
+            return res.send('card not found', 500);
+        }
+
+        if (newTitle) card.title = newTitle;
+        if (newContent) card.content = newContent;
+        card.duedate = duedate; //if no duedate, user maybe wants to remove it
+
+        if (archivedat) {
+            card.archivedat = archivedat;
+            card.stacktitleafterarchived = stacktitleafterarchived;
+        }
+        if (stackid) card.stackid = stackid;
+
+        card.save(function(err) {
+            if (err) {
+                console.log(err);
+                return res.send(err, 500);
+            }
+            res.send(card, 201)
+        })
+    })
+};
+
+exports.delete = function(req, res) {
+    var cardid = req.params.cardid;
+
+    Card
+    .findById(cardid)
+    .exec(function (err, card) {
+        if (err) {
+            console.log(err);
+            return res.send(err, 500);
+        }
+        if (!card) {
+            console.log('card not found');
+            return res.send('card not found', 500);
+        }
+        card.remove(function(err) {
+            if (err) {
+                console.log(err);
+                return res.send(err, 500);
+            }
+            res.send(card, 200)
+        })
+    })
 };

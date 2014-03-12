@@ -126,7 +126,6 @@ exports.getall = function(req, res) {
     Stack
     .find({owner: currentuser_id})
     .sort({createdat:-1})
-    .populate('User')
     .exec(function (err, stacks) {
         if (err) {
             console.log(err)

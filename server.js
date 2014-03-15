@@ -4,7 +4,9 @@ var express =       require('express')
     , path =        require('path')
     , User_Ctrl =   require('./server/core/controllers/user.js')
     , _ =           require('underscore')
-    , mongoose =    require('mongoose');
+    , mongoose =    require('mongoose')
+    , util =        require('util')
+    , formidable = require('formidable');
 
 /**
  * Define environment. Can be pre-set via grunt already
@@ -55,17 +57,68 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 
+app.use('/uploads', express.static('/home/christophe/otouploads'));
+
 app.use(express.static(path.join(__dirname, 'client')));
 
 app.use(express.cookieParser());
 app.use(express.cookieSession({secret: config.sessionSecret}));
 
+/*app.use(function(err, req, res, next){
+    if (req.url == '/upload' && req.method.toLowerCase() == 'post') {
+      // parse a file upload
+      var form = new formidable.IncomingForm();
+
+      form.parse(req, function(err, fields, files) {
+        res.writeHead(200, {'content-type': 'text/plain'});
+        res.write('received upload:\n\n');
+        res.end(util.inspect({fields: fields, files: files}));
+      });
+    }
+});*/
+
+
+
 app.configure('development', 'production', function() {
     app.use(express.csrf());
     app.use(function(req, res, next) {
         res.cookie('XSRF-TOKEN', req.csrfToken());
+        res.locals.csrftoken = req.csrfToken();
         next();
     });
+});
+
+app.use(function(req, res, next) {
+  if (req.url == '/upload' && req.method.toLowerCase() == 'post') {
+
+    var form = new formidable.IncomingForm();
+
+    var fieldsObj = {};
+    var filesObj = {};
+
+    form.uploadDir = "/home/christophe/otouploads";
+
+    form.on('field', function(field, value) {
+      fieldsObj[field] = value;
+    });
+
+    form.on('file', function(field, file) {
+      filesObj[field] = file;
+    });
+
+    form.on('end', function() {
+      req.body = fieldsObj;
+      req.files = filesObj;
+      next();
+    });
+
+    form.parse(req);
+
+  }
+  else {
+    next();
+  }
+
 });
 
 /**

@@ -1099,7 +1099,8 @@ require('../models/models.js');
 
 var mongoose = require('mongoose'),
     _ = require('underscore'),
-    Card = mongoose.model('Card');
+    Card = mongoose.model('Card'),
+    Att = mongoose.model('Att');
 
 
 exports.getall = function(req, res) {
@@ -1107,6 +1108,7 @@ exports.getall = function(req, res) {
 
     Card
     .find({owner: currentuser_id})
+    .populate('fileattachments')
     .sort({createdat:-1})
     .exec(function (err, cards) {
         if (err) {
@@ -1136,10 +1138,7 @@ exports.post = function(req, res) {
         duedate = req.body.card.duedate,
         stackid = req.body.card.stackid;
 
-        console.log(req.body.card)
-
     var clientid = req.body.clientid;
-
     var card = new Card({title: title, content: content, stackid: stackid, owner: currentuser_id});
 
     if (duedate) {
@@ -1211,6 +1210,89 @@ exports.delete = function(req, res) {
             return res.send('card not found', 500);
         }
         card.remove(function(err) {
+            if (err) {
+                console.log(err);
+                return res.send(err, 500);
+            }
+            res.send(card, 200)
+        })
+    })
+};
+exports.upload = function(req, res) {
+  var cardid = req.body.cardid,
+      clientid = req.body.clientid,
+      reqatt = JSON.parse(req.body.att);
+  var position = reqatt.position,
+    filename = reqatt.filename;
+
+
+  var att = new Att({
+        position: position,
+        filename: filename,
+        cardid: cardid
+    });
+
+  //Get att type
+  var attType = 'default';
+  console.log(req.body)
+  if (req.files.file.type.search('image/') > -1) attType = 'image';
+
+  att.attach(attType, req.files.file, function(err) {
+    if(err) return res.send(err, 500);
+
+    att.save(function(err) {
+      if(err) res.send(err, 500);
+
+      //Save to card
+      if (cardid) {
+        Card
+        .findById(cardid)
+        .exec(function (err, card) {
+            if (err) {
+                console.log(err);
+                return res.send(err, 500);
+            }
+            if (!card) {
+                console.log('card not found');
+                return res.send('card not found', 500);
+            }
+            card.fileattachments.push(att);
+            card.save(function(err) {
+                if (err) {
+                    console.log(err);
+                    return res.send(err, 500);
+                }
+                res.send(att, 200)
+            })
+        })
+      } else {
+          res.send(att, 201);
+      }
+
+    });
+  })
+};
+
+exports.deleteAtts = function(req, res) {
+  var cardid = req.body.cardid,
+      reqatt_ids = JSON.parse(req.body.array);
+
+     Card
+    .findById(cardid)
+    .exec(function (err, card) {
+        if (err) {
+            console.log(err);
+            return res.send(err, 500);
+        }
+        if (!card) {
+            console.log('card not found');
+            return res.send('card not found', 500);
+        }
+        _.each(reqatt_ids, function(attid) {
+            card.fileattachments.remove(attid);
+        });
+
+        card.save(function(err) {
             if (err) {
                 console.log(err);
                 return res.send(err, 500);

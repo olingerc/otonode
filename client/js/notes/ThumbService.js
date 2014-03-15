@@ -56,8 +56,14 @@ angular.module('oto')
       _us.thumbs[clientid].progress = progress;
    };
 
-   _us.getServerId = function(clientid, serverid, prefix) {
+   _us.getServerId = function(clientid, serverid, prefix, att) {
       if (!prefix) prefix = '';
+
+      if (prefix == '/thumbnail/') { //NEW
+         if (att.image) return att.image.thumb.defaultUrl;
+         else return '/img/nothumb.png';
+      }
+
       if (serverid) {          //initial pageload
          return prefix + serverid;
       }

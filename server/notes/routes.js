@@ -67,6 +67,18 @@ module.exports = [
       httpMethod: 'GET',
       middleware: [attachments.get],
       accessLevel: accessLevels.user
+   },
+//Att
+   {
+      path: '/upload',
+      httpMethod: 'POST',
+      middleware: [cards.upload],
+      accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/notes/deleteatts',
+      httpMethod: 'POST',
+      middleware: [cards.deleteAtts],
+      accessLevel: accessLevels.user
    }
-
 ];

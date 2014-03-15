@@ -6,6 +6,13 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+var lfs = require('mongoose-attachments-localfs');
+
+lfs.prototype.getUrl = function(path) {
+  return path.replace('/home/christophe/otouploads', '/uploads');
+}
+var attachments = require('mongoose-attachments');
+
 /**
  * Stacks Schema
  */
@@ -31,6 +38,63 @@ mongoose.model('Stack', StackSchema);
 
 
 /**
+ * Att
+ */
+
+var AttSchema = new Schema({
+  position: Number,
+  cardid: String,
+  filename: String
+});
+AttSchema.plugin(attachments, {
+    directory: '/home/christophe/otouploads',
+    storage : {
+        providerName: 'localfs'
+    },
+    properties: {
+        default: {
+            styles: {
+                original: {
+                    // keep the original file
+                }
+            }
+        },
+        image: {
+            styles: {
+                original: {
+                    // keep the original file
+                },
+                thumb: {
+                    thumbnail: '100x100^',
+                    gravity: 'center',
+                    extent: '100x100',
+                    '$format': 'jpg'
+                },
+                detail: {
+                    resize: '400x400>',
+                    '$format': 'jpg'
+                }
+            }
+        }
+    }
+});
+AttSchema.virtual('detail_img').get(function() {
+    return path.join('detail', path.basename(this.image.detail.path));
+});
+AttSchema.virtual('thumb_img').get(function() {
+    return path.join('thumb', path.basename(this.image.thumb.path));
+});
+
+/*
+The URL to the images would then be http://<your host>/<mount path>/images prepended to the value of MyModel.detail_img and MyModel.thumb_img.
+*/
+
+
+
+mongoose.model('Att', AttSchema);
+
+
+/**
  * Cards Schema
  */
 
@@ -43,7 +107,8 @@ var CardSchema = new Schema({
     modifiedat:             {type: Date, index: true},
     stacktitleafterarchived:String,
     archivedat:             {type: Date},
-    duedate:                {type: Date}
+    duedate:                {type: Date},
+    fileattachments:            [{type: mongoose.Schema.Types.ObjectId, ref: 'Att'}]
 });
 
 CardSchema.pre('save', function(next){
@@ -54,8 +119,8 @@ CardSchema.pre('save', function(next){
   next();
 });
 
-mongoose.model('Card', CardSchema);
 
+mongoose.model('Card', CardSchema);
 
 
 

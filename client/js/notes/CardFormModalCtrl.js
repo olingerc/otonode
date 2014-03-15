@@ -1,5 +1,5 @@
 angular.module('oto')
-.controller('CardFormModalInstanceCtrl', ['$scope', '$filter', '$http', '$modalInstance', 'CardToEdit', '$fileUploader', 'thumbService', function($scope, $filter, $http, $modalInstance, CardToEdit, $fileUploader, thumbService) {
+.controller('CardFormModalInstanceCtrl', ['$scope', '$filter', '$http', '$modalInstance', 'Auth', 'CardToEdit', '$fileUploader', 'thumbService', function($scope, $filter, $http, $modalInstance, Auth, CardToEdit, $fileUploader, thumbService) {
 
    var resolvePost = {},
       resolveUpdate = {};
@@ -175,7 +175,7 @@ angular.module('oto')
       if (filesToDelete.length > 0) {
          $http({
             method : 'POST',
-            url : '/deleteatts',
+            url : '/api/notes/deleteatts',
             headers : {
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
@@ -283,7 +283,7 @@ angular.module('oto')
       if (filesToDelete.length > 0) {
          $http({
             method : 'POST',
-            url : '/deleteatts',
+            url : '/api/notes/deleteatts',
             headers : {
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
@@ -355,12 +355,15 @@ angular.module('oto')
       url: '/upload',
       autoUpload: true,
       removeAfterUpload: true,
-      scope:$scope
+      scope:$scope,
+      headers: {
+         'X-XSRF-TOKEN': Auth.xsrfToken
+      }
    });
 
    uploader.bind('afteraddingfile', function (event, item) {
       //console.info('After adding a file', item);
-      var cardid = $scope.cardFormCard.id,
+      var cardid = $scope.cardFormCard._id,
          clientid = makeid(),
          position = $scope.fileAttachmentsList.length;
 
@@ -430,7 +433,7 @@ angular.module('oto')
    });
 
    $scope.removeAtt = function(att) {
-      var serverid = thumbService.getServerId(att.clientid, att.id);
+      var serverid = thumbService.getServerId(att.clientid, att._id, '', att);
       fileAttachmentsRemoved.push(serverid);
       $scope.fileAttachmentsList.splice($scope.fileAttachmentsList.indexOf(att), 1);
       $scope.attachmentsChanged = true;
@@ -504,7 +507,7 @@ angular.module('oto')
    };
 
    $scope.removeLink = function(att) {
-      var serverid = thumbService.getServerId(att.clientid, att.id);
+      var serverid = thumbService.getServerId(att.clientid, att.id, '', att);
       urlAttachmentsRemoved.push(serverid);
       $scope.urlAttachmentsList.splice($scope.urlAttachmentsList.indexOf(att), 1);
       $scope.attachmentsChanged = true;

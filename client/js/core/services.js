@@ -1,11 +1,12 @@
 'use strict';
 
 angular.module('oto')
-.factory('Auth', function($http, $cookieStore, $rootScope){
+.factory('Auth', function($http, $cookieStore, $rootScope, $cookies){
 
     var accessLevels = routingConfig.accessLevels
         , userRoles = routingConfig.userRoles
-        , currentUser = $cookieStore.get('user') || { username: '', role: userRoles.public };
+        , currentUser = $cookieStore.get('user') || { username: '', role: userRoles.public }
+        , xsrfToken = $cookies['XSRF-TOKEN'] || null;
 
     $cookieStore.remove('user');
 
@@ -27,6 +28,7 @@ angular.module('oto')
         },
         register: function(user, success, error) {
             $http.post('/register', user).success(function(res) {
+                console.log(headers())
                 changeUser(res);
                 success();
             }).error(error);
@@ -49,7 +51,8 @@ angular.module('oto')
         },
         accessLevels: accessLevels,
         userRoles: userRoles,
-        user: currentUser
+        user: currentUser,
+        xsrfToken: xsrfToken
     };
 });
 

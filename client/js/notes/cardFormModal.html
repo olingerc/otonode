@@ -83,15 +83,18 @@
                               <a class="att_thumb_link" title="{{att.filename}}"
                                  ng-href="">
                                  <div class='thumbContainer'>
-                                    <thumb-progress showprogress="thumbService.getProgress(att.clientid, att._id) != ''"></thumb-progress>
-                                    <img class="att_thumb img-rounded" ng-src="{{thumbService.getServerId(att.clientid, att._id, '/thumbnail/')}}" ng-show="thumbService.getProgress(att.clientid, att._id) == ''">
+                                    <thumb-progress
+                                       showprogress="thumbService.getProgress(att.clientid, att._id, att) != ''"></thumb-progress>
+                                    <img class="att_thumb img-rounded"
+                                       ng-src="{{thumbService.getServerId(att.clientid, att._id, '/thumbnail/', att)}}"
+                                       ng-show="thumbService.getProgress(att.clientid, att._id, att) == ''">
                                  </div>
                                  <small class="att_thumb_overlay text-center">
                                     <i class="attdelbutton glyphicon glyphicon-trash"
                                        ng-click="$event.stopPropagation();removeAtt(att)"
-                                       ng-show="thumbService.allowDelete(att.clientid, att._id)">
+                                       ng-show="thumbService.allowDelete(att.clientid, att._id, att)">
                                     </i>
-                                    {{thumbService.getProgress(att.clientid, att._id)}}
+                                    {{thumbService.getProgress(att.clientid, att._id, att)}}
                                  </small>
                               </a>
                            </li>
@@ -101,12 +104,14 @@
                                  ng-href="">
                                  <div class='thumbContainer'>
                                     <thumb-progress showprogress="thumbService.getProgress(att.clientid, att._id) != ''"></thumb-progress>
-                                    <img class="att_thumb img-rounded" ng-src="{{thumbService.getServerId(att.clientid, att._id, '/thumbnaillink/')}}" ng-show="thumbService.getProgress(att.clientid, att._id) == ''">
+                                    <img class="att_thumb img-rounded"
+                                       ng-src="{{thumbService.getServerId(att.clientid, att._id, '/thumbnaillink/', att)}}"
+                                       ng-show="thumbService.getProgress(att.clientid, att._id, att) == ''">
                                  </div>
                                  <small class="att_thumb_overlay">
                                     <i class="attdelbutton glyphicon glyphicon-trash"
                                        ng-click="$event.stopPropagation();removeLink(att)"
-                                       ng-show="thumbService.allowDelete(att.clientid, att._id)">
+                                       ng-show="thumbService.allowDelete(att.clientid, att._id, att)">
                                     </i>
                                     <i class="glyphicon  glyphicon-share-alt"></i>
                                  </small>

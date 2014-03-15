@@ -14,7 +14,10 @@
     "passport-google-oauth": "~0.1.5",
     "thetvdb-api": "https://github.com/olingerc/thetvdb-api/tarball/master",
     "node-async": "0.0.1",
-    "async": "~0.2.10"
+    "async": "~0.2.10",
+    "formidable": "^1.0.14",
+    "mongoose-attachments-localfs": "^0.1.0",
+    "mongoose-attachments": "^0.1.0"
   },
   "repository": {
     "type": "git",

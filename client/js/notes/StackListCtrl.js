@@ -82,6 +82,7 @@ angular.module('oto')
             if ($scope.$parent.activestack._id == renamedStack._id) {
                $scope.$parent.activestack.title = renamedStack.title;
             }
+            Stacks.activeStack = renamedStack;
          },
          function(response) {
          if (response.code == 11000) {
@@ -128,6 +129,7 @@ angular.module('oto')
       Cards.setActiveCard(null);
       $scope.$parent.search = stack._id;
       $scope.$parent.activestack = stack;
+       Stacks.activeStack = stack;
    };
 
    $scope.listStackAll = function() {
@@ -138,11 +140,20 @@ angular.module('oto')
          'title':'All',
          '_id': null
       };
+      Stacks.activeStack = {
+         'owner':null,
+         'title':'All',
+         '_id': null
+      };
    };
    $scope.listStackArchive = function() {
       Cards.setActiveCard(null);
       $scope.$parent.search = "archive";
       $scope.$parent.activestack = {
+         'title':'Archive',
+         '_id':'archive'
+      };
+      Stacks.activeStack = {
          'title':'Archive',
          '_id':'archive'
       };

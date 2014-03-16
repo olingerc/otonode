@@ -5,12 +5,12 @@ angular.module('oto')
    _us.count = {};
 
    _us.storeThumbnail = function(cardid, clientid, serverid, att) {
-      if (att) { //differentiate between ng-init on page load (att has serverid) or new att added by client (att has no serverid) for cardlist
-         if (!att._id) {
+      if (att._id) { //differentiate between ng-init on page load (att has serverid) or new att added by client (att has no serverid) for cardlist
+         if (att._id.substring(0,3) !== 'new') {
             return;
          }
       }
-      if (clientid && !serverid) {         //server starts upload
+      if (clientid && !serverid) {         //server starts upload, no verservid back yet, att has no _id
          if (!_us.count[cardid]) {
             _us.count[cardid] = 1;
          } else {
@@ -81,7 +81,7 @@ angular.module('oto')
       }
    };
 
-   _us.getProgress = function(clientid, serverid) {
+   _us.getProgress = function(clientid, serverid, att) {
       if (serverid) {
          return '';
       }

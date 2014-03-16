@@ -1165,6 +1165,7 @@ exports.put = function(req, res) {
 
     Card
     .findById(cardid)
+    .populate('fileattachments')
     .exec(function (err, card) {
         if (err) {
             console.log(err);
@@ -1276,6 +1277,8 @@ exports.upload = function(req, res) {
 exports.deleteAtts = function(req, res) {
   var cardid = req.body.cardid,
       reqatt_ids = JSON.parse(req.body.array);
+
+      //TODO if cancelling do not change modifiedat
 
      Card
     .findById(cardid)

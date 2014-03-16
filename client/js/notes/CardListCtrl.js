@@ -1,6 +1,6 @@
 'use strict';
 angular.module('oto')
-.controller('CardListCtrl', ['$scope', '$filter', '$modal', 'Cards', 'thumbService', function($scope, $filter, $modal, Cards, thumbService) {
+.controller('CardListCtrl', ['$scope', '$filter', 'Cards', 'thumbService', function($scope, $filter, Cards, thumbService) {
 
    $scope.selectCard = function(card) {
      //Inform the Cards service about the active card. The service is not used in the Card list view directly, only in the Card Header view
@@ -28,17 +28,8 @@ angular.module('oto')
           document.selection.empty();
       }
 
-      Cards.setActiveCard(card);
-      var modalInstance = $modal.open({
-         templateUrl: '/js/notes/cardFormModal.html',
-         controller: 'CardFormModalInstanceCtrl',
-         scope: $scope,
-         resolve: {
-            CardToEdit:function() {
-               return card;
-            }
-         }
-      });
+      Cards.cardFormCard = card;
+      Cards.showForm = true;
    };
 
    /**********

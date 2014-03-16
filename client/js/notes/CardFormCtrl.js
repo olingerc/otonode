@@ -1,53 +1,63 @@
 angular.module('oto')
-.controller('CardFormModalInstanceCtrl', ['$scope', '$filter', '$http', '$modalInstance', 'Auth', 'CardToEdit', '$fileUploader', 'thumbService', function($scope, $filter, $http, $modalInstance, Auth, CardToEdit, $fileUploader, thumbService) {
+.controller('CardFormCtrl', ['$scope', '$filter', '$http', 'Auth', 'Stacks', 'Cards', '$fileUploader', 'thumbService', function($scope, $filter, $http, Auth, Stacks, Cards, $fileUploader, thumbService) {
 
    var resolvePost = {},
       resolveUpdate = {};
 
-   /*************
-    *
-    * Initial form status on modal open
-    *
-    ***********/
    var emptyCard = {
       title : '',
       content : '',
       duedate : ''
    };
 
-   resetCardForm(); //TODO: actually only initial link input value here is interesting during debugging on carform opne. since it's always a new modal instance'
+   $scope.Cards = Cards;
 
-   //Define state depending or new or add
-   if (CardToEdit) {
-      if (thumbService.areAttsPending(CardToEdit._id)  || CardToEdit.saving) {
-         $modalInstance.close(); //safeguard
-         return;
+   $scope.$watch('Cards.cardFormCard', function(newCard) {
+      //resetCardForm();
+      $scope.cardFormCard = newCard;
+      initiate();
+   }, true);
+
+   $scope.showForm = false;
+   $scope.$watch('Cards.showForm', function (what) {
+      $scope.showForm = what;
+   });
+
+   resetCardForm()//TODO: I have a problem since things are in use when saving, I can not edit or add another card while previous save is no finished
+
+   function initiate() {
+      //Define state depending or new or add
+      if ($scope.cardFormCard) {
+         if (thumbService.areAttsPending($scope.cardFormCard._id)  || $scope.cardFormCard.saving) {
+            Cards.cardFormCard = null; //safeguard to not edit the same card twice
+            return;
+         }
+
+         $scope.originalCardNoHash = angular.copy($scope.cardFormCard); //I need this to enable/disable save button comparison. the above vontains $$hash
+         //we keep original card in order to detect whethter the save button should be enabled
+
+         $scope.loadedCard = _.clone($scope.cardFormCard);
+
+         if ($scope.loadedCard.duedate) {
+            $scope.loadedCard.duedate = $scope.loadedCard.duedate.substring(0, 10);
+         }
+         if (!$scope.loadedCard.fileattachments) {
+            $scope.loadedCard.fileattachments = [];
+         }
+         if (!$scope.loadedCard.urlattachments) {
+            $scope.loadedCard.urlattachments = [];
+         }
+         //otherwise not recognized
+         $scope.fileAttachmentsList = $scope.loadedCard.fileattachments;
+         $scope.urlAttachmentsList = $scope.loadedCard.urlattachments;
+
+         //New Card
+         if ($scope.loadedCard._id.substring(0,3) == 'new') {
+            $scope.cardFormAction = 'new';
+         } else {
+            $scope.cardFormAction = 'edit';
+         }
       }
-
-      $scope.cardFormAction = 'edit';
-      $scope.cardFormCard = angular.copy(CardToEdit);
-
-      if ($scope.cardFormCard.duedate) {
-         $scope.cardFormCard.duedate = $scope.cardFormCard.duedate.substring(0, 10);
-      }
-      if (!$scope.cardFormCard.fileattachments) {
-         $scope.cardFormCard.fileattachments = [];
-      }
-      if (!$scope.cardFormCard.urlattachments) {
-         $scope.cardFormCard.urlattachments = [];
-      }
-      //otherwise not recognized
-
-      $scope.originalCard = CardToEdit; //I need a direct reference to to update it later
-      $scope.originalCardNoHash = angular.copy($scope.cardFormCard); //I need this to enable/disable save button comparison. the above vontains $$hash
-      //we keep original card in order to detect whethter the save button should be enabled
-
-      $scope.fileAttachmentsList = $scope.cardFormCard.fileattachments;
-      $scope.urlAttachmentsList = $scope.cardFormCard.urlattachments;
-   } else {
-      $scope.cardFormAction = 'new';
-      $scope.cardFormCard = angular.copy(emptyCard);
-      $scope.cardFormCard._id = 'new' + makeid();
    }
 
    /*************
@@ -76,9 +86,8 @@ angular.module('oto')
       $scope.titleError = false;
       $scope.titleErrorMessage = '';
       //Set temporary objects to empty
-      $scope.originalCard = null;
       $scope.originalCardNoHash = null;
-      $scope.cardFormCard = angular.copy(emptyCard);
+      $scope.loadedCard = angular.copy(emptyCard);
 
       $scope.isLinkInputVisible = false;
 
@@ -98,10 +107,10 @@ angular.module('oto')
    };
 
    var addCard = function() {
-      $modalInstance.close();
-      var newCard = $scope.cardFormCard;
-      var clientid = $scope.cardFormCard._id;
-      newCard.stackid = $scope.activestack._id;
+      Cards.showForm = false;
+      var newCard = $scope.loadedCard;
+      var clientid = $scope.loadedCard._id;
+      newCard.stackid = Stacks.activeStack._id;
       newCard.clientid = clientid;
       newCard.fileattachments = angular.copy($scope.fileAttachmentsList);
       newCard.urlattachments = angular.copy($scope.urlAttachmentsList);
@@ -114,7 +123,7 @@ angular.module('oto')
       }
 
       //Display card in UI
-      $scope.cards.push(newCard);
+      Cards.cards.push(newCard);
 
       //Save card on server
       resolvePost[clientid] = function() {
@@ -131,7 +140,7 @@ angular.module('oto')
                clientid: clientid
             })
          }).success(function(response) {
-            var found = $filter('filter')($scope.cards, {clientid:response.clientid});
+            var found = $filter('filter')(Cards.cards, {clientid:response.clientid});
             if (found.length === 1) {
                //Update paramters calculated on server
                found[0]._id = response.card._id;
@@ -159,7 +168,7 @@ angular.module('oto')
       if ($scope.cardForm.$invalid) {
          return; //safeguard
       }
-      $modalInstance.close();
+      Cards.showForm = false;
       //Handle attachments first
       var filesToDelete = [];
       //1)Those in added AND removed --> delete
@@ -180,7 +189,7 @@ angular.module('oto')
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
             data : $.param({
-               cardid : $scope.cardFormCard._id,
+               cardid : $scope.loadedCard._id,
                array : JSON.stringify(filesToDelete)
             })
          });
@@ -202,25 +211,31 @@ angular.module('oto')
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
             data : $.param({
-               cardid : $scope.cardFormCard._id,
+               cardid : $scope.loadedCard._id,
                array : JSON.stringify(urlsToDelete)
             })
          });
       }
 
-      var updatedCardToSend = $scope.cardFormCard;
-      updatedCardToSend.clientid = $scope.cardFormCard._id;
+      var updatedCardToSend = $scope.loadedCard;
+      updatedCardToSend.clientid = $scope.loadedCard._id;
       updatedCardToSend.fileattachments = angular.copy($scope.fileAttachmentsList);
       updatedCardToSend.urlattachments = angular.copy($scope.urlAttachmentsList);
       updatedCardToSend.modifiedat = getDateWithTime();
       updatedCardToSend.saving = true;
 
+
       if (updatedCardToSend.duedate == '') {
          updatedCardToSend.duedate = null;
       }
 
+      /*Cards.cardFormCard.saving = true;
+      Cards.cardFormCard.fileattachments = angular.copy($scope.fileAttachmentsList);
+      Cards.cardFormCard.urlattachments = angular.copy(updatedCardToSend);
+      Cards.cardFormCard.clientid = $scope.loadedCard._id;*/
+
       //Display card in UI
-      angular.extend($scope.originalCard, updatedCardToSend); //previoulsy _.
+      _.extend($scope.cardFormCard, updatedCardToSend); //previoulsy _.
 
       resolveUpdate[updatedCardToSend._id] = function() {
          $http.put('/api/notes/cards/' + updatedCardToSend._id, updatedCardToSend)
@@ -228,10 +243,10 @@ angular.module('oto')
                //Update attachments in model (server already ok)
                updatedCard.saving = false;
 
-               var filtered = $filter('filter')($scope.cards, {_id : updatedCard._id});
+               var filtered = $filter('filter')(Cards.cards, {_id : updatedCard._id});
                if (filtered.length === 1) {
                   //Update paramters calculated on server
-                  $scope.cards[$scope.cards.indexOf(filtered[0])] = updatedCard;
+                  Cards.cards[Cards.cards.indexOf(filtered[0])] = updatedCard;
                } else {
                   console.log(found);
                   alert('Error saving card:' +  card._id);
@@ -242,6 +257,7 @@ angular.module('oto')
             });
       };
 
+      console.log(thumbService.areAttsPending(updatedCardToSend._id))
       if (thumbService.areAttsPending(updatedCardToSend._id) === false) {
          resolveUpdate[updatedCardToSend._id].apply();
          delete resolveUpdate[updatedCardToSend._id];
@@ -249,7 +265,7 @@ angular.module('oto')
    };
 
    $scope.cancelCardForm = function() {
-      $modalInstance.dismiss();
+      Cards.showForm = false;
       if ($scope.cardFormAction === 'edit') {
          //Handle file attachments first
          var filesToDelete = [];
@@ -288,7 +304,7 @@ angular.module('oto')
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
             data : $.param({
-               cardid : $scope.cardFormCard.id,
+               cardid : $scope.loadedCard._id,
                array : JSON.stringify(filesToDelete),
                changeModifiedat : false
             })
@@ -302,7 +318,7 @@ angular.module('oto')
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
             data : $.param({
-               cardid : $scope.cardFormCard.id,
+               cardid : $scope.loadedCard.id,
                array : JSON.stringify(urlsToDelete),
                changeModifiedat : false
             })
@@ -318,13 +334,13 @@ angular.module('oto')
             return true;
          }
 
-         if ($scope.attachmentsChanged === true && angular.equals($scope.cardFormCard, $scope.originalCardNoHash)) {
+         if ($scope.attachmentsChanged === true && angular.equals($scope.loadedCard, $scope.originalCardNoHash)) {
             return false;
          }
-         if ($scope.attachmentsChanged === false && !angular.equals($scope.cardFormCard, $scope.originalCardNoHash)) {
+         if ($scope.attachmentsChanged === false && !angular.equals($scope.loadedCard, $scope.originalCardNoHash)) {
             return false;
          }
-         if ($scope.attachmentsChanged === true && !angular.equals($scope.cardFormCard, $scope.originalCardNoHash)) {
+         if ($scope.attachmentsChanged === true && !angular.equals($scope.loadedCard, $scope.originalCardNoHash)) {
             return false;
          }
 
@@ -363,7 +379,7 @@ angular.module('oto')
 
    uploader.bind('afteraddingfile', function (event, item) {
       //console.info('After adding a file', item);
-      var cardid = $scope.cardFormCard._id,
+      var cardid = $scope.loadedCard._id,
          clientid = makeid(),
          position = $scope.fileAttachmentsList.length;
 
@@ -386,7 +402,7 @@ angular.module('oto')
       $scope.fileAttachmentsList[position] = newAtt;
       $scope.attachmentsChanged = true;
 
-      thumbService.storeThumbnail(cardid, clientid, null);
+      thumbService.storeThumbnail(cardid, clientid, null, newAtt);
    });
 
    uploader.bind('progress', function (event, item, progress) {
@@ -399,14 +415,18 @@ angular.module('oto')
    uploader.bind('success', function (event, xhr, item, response) {
       //console.info('Success', xhr, item, response);
       var clientid = item.formData[0].clientid,
-         serverid = response.id;
+         serverid = response._id;
 
-      thumbService.storeThumbnail(item.formData[0].cardid, clientid, serverid);
+      if ($scope.fileAttachmentsList) {
+         //Form still open
+         $scope.fileAttachmentsList[response.position] = response;
+         fileAttachmentsAdded.push(serverid);
+      }
+      thumbService.storeThumbnail(item.formData[0].cardid, clientid, serverid, response);
       thumbService.changeStatus(clientid, 'done');
       thumbService.changeStatus(serverid, 'done');
-      fileAttachmentsAdded.push(serverid);
 
-      $scope.$apply(); //If multiple files, this forces to get thumnail of previously finished ones
+      $scope.$apply(); //If multiple files, this forces to get thumbnail of previously finished ones
    });
 
    uploader.bind('cancel', function (event, xhr, item) {
@@ -457,7 +477,7 @@ angular.module('oto')
 
    $scope.addLink = function() {
       $scope.isLinkInputVisible = false;
-      var cardid = $scope.cardFormCard.id,
+      var cardid = $scope.loadedCard._id,
          clientid = makeid(),
          position = $scope.urlAttachmentsList.length;
 

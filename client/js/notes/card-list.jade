@@ -1,4 +1,12 @@
-#cardView.row(ng-controller='NotesViewCtrl')
+section(ng-controller='CardFormCtrl')
+  div(ng-show='showForm')
+    ng-include(src="'/js/notes/cardForm.html'")
+
+
+#cardView.row(
+  ng-controller='NotesViewCtrl'
+  ng-hide='showForm'
+  )
   section#sidebar.col-md-3(ng-controller='StackListCtrl')
     // Fix stacks
     .btn-group
@@ -214,7 +222,7 @@
                           ng-src='{{thumbService.getServerId(att.clientid, att._id, "/thumbnail/", att)}}',
                           ng-show='thumbService.getProgress(att.clientid, att._id, att) == ""'
                           )
-                      small.att_thumb_overlay.text-muted.text-center(ng-show='thumbService.getProgress(att.clientid, att._id) !== ""')
+                      small.att_thumb_overlay.text-muted.text-center(ng-show='thumbService.getProgress(att.clientid, att._id, att) !== ""')
                         | {{thumbService.getProgress(att.clientid, att._id, att)}}
                   // url Attachments
                   li(ng-repeat='att in card.urlattachments')

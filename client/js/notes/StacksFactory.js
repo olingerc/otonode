@@ -1,7 +1,8 @@
 angular.module('oto')
 .factory('Stacks', ['$http', function($http) {
    var userStacks = [],
-      floatingStack = null;
+      floatingStack = null,
+      _activeStack = null;
 
    return {
       getAll: function(callback) {
@@ -38,6 +39,7 @@ angular.module('oto')
       },
       remove: function(stackid, success, error) {
          $http.delete ('/api/notes/stacks/' + stackid).success(success).error(error);
-      }
+      },
+      activeStack: _activeStack
    };
 }]);

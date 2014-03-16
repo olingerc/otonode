@@ -1,11 +1,11 @@
-            <div class="modal-header">
+
+            <h3 class="">
                {{{new: 'Add new card', edit: 'Edit card'}[cardFormAction]}}
-            </div>
+            </h3>
 
 
-            <div class="modal-body">
+            <div class="well">
                <div id='cardFormContainer' class=''>
-
 
                      <form name="$parent.cardForm" id='cardForm' role="form" class="form-horizontal">
                         <div class="form-group">
@@ -121,7 +121,7 @@
                   </div>
                </div>
          </div>
-            <div class="modal-footer">
+            <p>
                   <button id="submitAddCardFormBtn" type="submit" class="btn btn-primary"
                      ng-click="doCardFormAction()"
                      ng-disabled="isSaveDisabled()">
@@ -131,4 +131,4 @@
                      ng-click="cancelCardForm()">
                      cancel <i class="glyphicon  glyphicon-remove"></i>
                   </button>
-            </div>
+            </p>

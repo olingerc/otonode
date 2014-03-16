@@ -17,6 +17,18 @@ angular.module('oto')
       $scope.orderProp = orderProp;
    };
 
+   $scope.activeCard = Cards.activeCard;
+
+   $scope.Cards = Cards;
+
+   $scope.$watch('Cards.cardFormCard', function(newCard) {
+      $scope.cardFormCard = newCard;
+   }, true);
+   $scope.showForm = false;
+   $scope.$watch('Cards.showForm', function (what) {
+      $scope.showForm = what;
+   });
+
    /********************
     *
     * parent scope methods
@@ -58,13 +70,19 @@ angular.module('oto')
          $scope.floatingStack = floatingStack;
          $scope.search = floatingStack._id; //show only cards of default stack
          $scope.activestack = floatingStack;
+         Stacks.activeStack = floatingStack;
       }
    );
 
    $scope.cards = [];
+
+   $scope.$watch('Cards.cards', function(newCards) {
+      $scope.cards = newCards;
+   }, true)
+
    Cards.getAll(
       function(cards) {
-         $scope.cards = cards;
+         Cards.cards = cards;
          //Keep as array of objects. The controller will regroup by sorting when parameters change
          $scope.cardGroups = [{
             'label': 'unsorted',
@@ -83,7 +101,6 @@ angular.module('oto')
     *
     *************/
 
-   $scope.activeCard = Cards.activeCard;
    $scope.processingCard = false; //to enable/disable edit button
    $scope.$watch('activeCard.value', function(value) {
       if (value) {
@@ -99,7 +116,18 @@ angular.module('oto')
       if ($scope.inArchive()) {
          return; //safeguard
       }
-      var modalInstance = $modal.open({
+
+      var card = {
+          _id: 'new' + makeid(),
+          title : '',
+          content : '',
+          duedate : ''
+      };
+      Cards.cardFormCard = card;
+      Cards.showForm = true;
+
+
+      /*var modalInstance = $modal.open({
          templateUrl: '/js/notes/cardFormModal.html',
          controller: 'CardFormModalInstanceCtrl',
          scope: $scope,
@@ -108,7 +136,7 @@ angular.module('oto')
                return null;
             }
          }
-      });
+      });*/
    };
 
    //Active Card actions
@@ -116,20 +144,12 @@ angular.module('oto')
       if ($scope.inArchive()) {
          return; //safeguard
       }
-      var modalInstance = $modal.open({
-         templateUrl: '/js/notes/cardFormModal.html',
-         controller: 'CardFormModalInstanceCtrl',
-         scope: $scope,
-         resolve: {
-            CardToEdit:function() {
-               return card;
-            }
-         }
-      });
+      Cards.cardFormCard = card;
+      Cards.showForm = true;
    };
 
    $scope.removeCard = function(card) {
-      Cards.setActiveCard(null);
+      Cards.setCardFormCard(null);
       if ($scope.inArchive()) {
          Cards.remove(
             card._id,

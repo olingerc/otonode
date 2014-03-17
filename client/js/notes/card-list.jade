@@ -146,7 +146,7 @@ section(ng-controller='CardFormCtrl')
           .btn-group
             .btn.btn-default(
               type='button',
-              ng-disabled='processingCard || inArchive() || !isNotNull(activeCard.value)',
+              ng-disabled='inArchive() || !isNotNull(activeCard.value)',
               ng-click='startEditCard(activeCard.value)'
               )
               span.glyphicon.glyphicon-edit
@@ -156,9 +156,9 @@ section(ng-controller='CardFormCtrl')
             ul.dropdown-menu
               li
                 a(
-                  ng-class='{"mute_link": processingCard || inArchive()}',
+                  ng-class='{"mute_link": inArchive()}',
                   ng-click='startEditCard(activeCard.value)',
-                  ng-disabled='processingCard || inArchive()'
+                  ng-disabled='inArchive()'
                   )
                   | Edit
               li.dropdown-header
@@ -200,8 +200,6 @@ section(ng-controller='CardFormCtrl')
                     small
                       i.glyphicon.glyphicon-time
                       | {{card.duedate  | date:'yyyy-MM-dd'}}
-                  li.card_mod_label(ng-show='{{card.saving}}')
-                    small.text-danger saving...
 
                 // Card Content
                 p {{card.content}}
@@ -212,31 +210,22 @@ section(ng-controller='CardFormCtrl')
                   li(ng-repeat='att in card.fileattachments')
                     a.att_thumb_link(
                       title='{{att.filename}}',
-                      ng-href='{{thumbService.getServerId(att.clientid, att._id, "/download/", att)}}',
-                      target='_self',
-                      ng-init='thumbService.storeThumbnail(card._id, att.clientid, att._id, att)'
+                      ng-href='{{attDownloadSrc(att)}}',
                       )
                       .thumbContainer
-                        thumb-progress(showprogress='thumbService.getProgress(att.clientid, att._id, att) != ""')
                         img.att_thumb.img-rounded(
-                          ng-src='{{thumbService.getServerId(att.clientid, att._id, "/thumbnail/", att)}}',
-                          ng-show='thumbService.getProgress(att.clientid, att._id, att) == ""'
+                          ng-src='{{attThumbSrc(att)}}'
                           )
-                      small.att_thumb_overlay.text-muted.text-center(ng-show='thumbService.getProgress(att.clientid, att._id, att) !== ""')
-                        | {{thumbService.getProgress(att.clientid, att._id, att)}}
                   // url Attachments
                   li(ng-repeat='att in card.urlattachments')
                     a.att_thumb_link(
                       title='{{att.url}}',
                       target='_blank',
-                      ng-href='{{att.url}}',
-                      ng-init='thumbService.storeThumbnail(card._id, att.clientid, att._id, att)'
+                      ng-href='{{att.url}}'
                       )
                       .thumbContainer
-                        thumb-progress(showprogress='thumbService.getProgress(att.clientid, att._id) != ""')
                         img.att_thumb.img-rounded(
-                          ng-src='{{thumbService.getServerId(att.clientid, att._id, "/thumbnaillink/", att)}}',
-                          ng-show='thumbService.getProgress(att.clientid, att._id, att) == ""'
+                          ng-src='{{attThumbSrc(att)}}'
                           )
                       small.att_thumb_overlay
                         span.glyphicon.glyphicon-share-alt

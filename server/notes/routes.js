@@ -1,7 +1,6 @@
 var accessLevels =   require('../../client/js/core/routingConfig').accessLevels,
    stacks = require('./controllers/stacks'),
-   cards = require('./controllers/cards'),
-   attachments = require('./controllers/attachments');
+   cards = require('./controllers/cards');
 
 module.exports = [
 //STACKS
@@ -59,13 +58,6 @@ module.exports = [
       path: '/api/notes/cards/:cardid',
       httpMethod: 'DELETE',
       middleware: [cards.delete],
-      accessLevel: accessLevels.user
-   },
-//Thumbnails
-   {
-      path: '/thumbnail/:attid',
-      httpMethod: 'GET',
-      middleware: [attachments.get],
       accessLevel: accessLevels.user
    },
 //Att

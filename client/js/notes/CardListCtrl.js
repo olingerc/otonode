@@ -1,6 +1,6 @@
 'use strict';
 angular.module('oto')
-.controller('CardListCtrl', ['$scope', '$filter', 'Cards', 'thumbService', function($scope, $filter, Cards, thumbService) {
+.controller('CardListCtrl', ['$scope', '$filter', 'Cards', function($scope, $filter, Cards) {
 
    $scope.selectCard = function(card) {
      //Inform the Cards service about the active card. The service is not used in the Card list view directly, only in the Card Header view
@@ -85,6 +85,13 @@ angular.module('oto')
       }
    }
 
-   $scope.thumbService = thumbService;
+   $scope.attDownloadSrc = function(att) {
+      return 'TODO';
+   };
+
+   $scope.attThumbSrc = function(att) {
+      if (att.image) return att.image.thumb.defaultUrl;
+      else return '/img/nothumb.png';
+   };
 
 }]);

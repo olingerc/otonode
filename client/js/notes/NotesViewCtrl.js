@@ -1,6 +1,6 @@
 'use strict';
 angular.module('oto')
-.controller('NotesViewCtrl', ['$scope', '$modal', 'Stacks', 'Cards', 'thumbService', function($scope, $modal, Stacks, Cards, thumbService) {
+.controller('NotesViewCtrl', ['$scope', '$modal', 'Stacks', 'Cards', function($scope, $modal, Stacks, Cards) {
    /********************
     *
     * parent scope variables
@@ -100,17 +100,6 @@ angular.module('oto')
     * Cards Header
     *
     *************/
-
-   $scope.processingCard = false; //to enable/disable edit button
-   $scope.$watch('activeCard.value', function(value) {
-      if (value) {
-         if (thumbService.areAttsPending(value.id) || value.saving) { //TODO: id or _id?
-            $scope.processingCard = true;
-         } else {
-            $scope.processingCard = false;
-         }
-      }
-   }, true);
 
    $scope.startAddCard = function() {
       if ($scope.inArchive()) {

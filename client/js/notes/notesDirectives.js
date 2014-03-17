@@ -19,7 +19,7 @@ angular.module('oto')
         replace: true,
         template: '<div style="margin-top:30px;min-width:50px" class="progress progress-striped">  <div class="progress-bar"  role="progressbar" aria-valuenow="100" style="width: 100%">  </div></div>',
         scope: {
-           showprogress:'=showprogress'
+           showprogress:'='
         },
         link: function($scope, element, attrs) {
             $scope.$watch('showprogress', function(showprogress) {

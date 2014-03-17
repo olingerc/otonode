@@ -1221,7 +1221,6 @@ exports.delete = function(req, res) {
 };
 exports.upload = function(req, res) {
   var cardid = req.body.cardid,
-      clientid = req.body.clientid,
       reqatt = JSON.parse(req.body.att);
   var position = reqatt.position,
     filename = reqatt.filename;

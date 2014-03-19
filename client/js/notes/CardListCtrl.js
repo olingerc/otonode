@@ -86,11 +86,17 @@ angular.module('oto')
    }
 
    $scope.attDownloadSrc = function(att) {
-      return 'TODO';
+      if (att.image) return att.image.original.defaultUrl;
+      else if (att.pdf) return att.pdf.original.defaultUrl;
+      else if (att.default) return att.default.original.defaultUrl;
+      else if (att.url) return att.url;
+      else return false;
    };
 
    $scope.attThumbSrc = function(att) {
       if (att.image) return att.image.thumb.defaultUrl;
+      else if (att.pdf) return att.pdf.thumb.defaultUrl;
+      else if (att.urlThumb) return att.urlThumb.thumb.defaultUrl;
       else return '/img/nothumb.png';
    };
 

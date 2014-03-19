@@ -72,5 +72,17 @@ module.exports = [
       httpMethod: 'POST',
       middleware: [cards.deleteAtts],
       accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/notes/addlink',
+      httpMethod: 'POST',
+      middleware: [cards.addLink],
+      accessLevel: accessLevels.user
+   },
+   {
+      path: '/api/notes/deletelinks',
+      httpMethod: 'POST',
+      middleware: [cards.deleteLinks],
+      accessLevel: accessLevels.user
    }
 ];

@@ -110,7 +110,9 @@ angular.module('oto')
           _id: 'new' + makeid(),
           title : '',
           content : '',
-          duedate : ''
+          duedate : '',
+          fileattachments: [],
+          urlattachments: []
       };
       Cards.cardFormCard = card;
       Cards.showForm = true;

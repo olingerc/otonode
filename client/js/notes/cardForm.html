@@ -98,21 +98,21 @@
                                  </small>
                               </a>
                            </li>
-                           <li ng-repeat="att in urlAttachmentsList"
+                           <li ng-repeat="att in loadedCard.urlattachments"
                               ng-click="$event.stopPropagation()">
                               <a class="inline att_thumb_link" title="{{att.url}}"
                                  ng-href="">
                                  <div class='thumbContainer'>
                                     <thumb-progress
-                                       ng-if='progressByPosition[$index]' showprogress="progressByPosition[$index]"></thumb-progress>
+                                       ng-if='progressByPositionUrl[$index]' showprogress="progressByPositionUrl[$index]"></thumb-progress>
                                     <img class="att_thumb img-rounded"
                                        ng-src="{{attThumbSrc(att)}}"
-                                       ng-if="!progressByPosition[$index]">
+                                       ng-if="!progressByPositionUrl[$index]">
                                  </div>
                                  <small class="att_thumb_overlay">
                                     <i class="attdelbutton glyphicon glyphicon-trash"
                                        ng-click="$event.stopPropagation();removeLink(att)"
-                                       ng-if="!progressByPosition[$index]">
+                                       ng-if="!progressByPositionUrl[$index]">
                                     </i>
                                     <i class="glyphicon  glyphicon-share-alt"></i>
                                  </small>

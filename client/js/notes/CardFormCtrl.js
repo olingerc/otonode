@@ -1,13 +1,12 @@
 angular.module('oto')
 .controller('CardFormCtrl', ['$scope', '$filter', '$http', 'Auth', 'Stacks', 'Cards', '$fileUploader', function($scope, $filter, $http, Auth, Stacks, Cards, $fileUploader) {
 
-   var resolvePost = {},
-      resolveUpdate = {};
-
    var emptyCard = {
       title : '',
       content : '',
-      duedate : ''
+      duedate : '',
+      fileattachments: [],
+      urlattachments: []
    };
 
    var uploadsListener = null;
@@ -21,20 +20,19 @@ angular.module('oto')
          //Reset on close
          resetCardForm();
       } else {
-         $scope.cardFormCard = Cards.cardFormCard;
          initiate();
       }
    });
 
    function initiate() {
       //Define state depending or new or add
-      if ($scope.cardFormCard) {
+      if (Cards.cardFormCard) {
          if ($scope.countUploads > 0  || $scope.saving) {
             Cards.cardFormCard = null; //safeguard to not edit the same card twice
             return;
          }
 
-         $scope.loadedCard = angular.copy($scope.cardFormCard);
+         $scope.loadedCard = angular.copy(Cards.cardFormCard);
 
          if ($scope.loadedCard.duedate) {
             $scope.loadedCard.duedate = $scope.loadedCard.duedate.substring(0, 10);
@@ -80,6 +78,7 @@ angular.module('oto')
       $scope.saving = false;
       $scope.countUploads = 0;
       $scope.progressByPosition=[];
+      $scope.progressByPositionUrl=[];
 
       if (uploadsListener) {
          uploadsListener();
@@ -204,7 +203,7 @@ angular.module('oto')
       if (urlsToDelete.length > 0) {
          $http({
             method : 'POST',
-            url : '/deletelink',
+            url : '/api/notes/deletelinks',
             headers : {
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
@@ -224,7 +223,7 @@ angular.module('oto')
       }
 
       //Display card in UI
-      _.extend($scope.cardFormCard, updatedCardToSend); //previoulsy _.
+      _.extend(Cards.cardFormCard, updatedCardToSend);
 
       $http.put('/api/notes/cards/' + updatedCardToSend._id, updatedCardToSend)
          .success(function(updatedCard) {
@@ -296,7 +295,7 @@ angular.module('oto')
       if (urlsToDelete.length > 0) {
          $http({
             method : 'POST',
-            url : '/deletelink',
+            url : '/api/notes/deletelinks',
             headers : {
                'Content-Type' : 'application/x-www-form-urlencoded'
             },
@@ -321,13 +320,13 @@ angular.module('oto')
             return true;
          }
 
-         if ($scope.attachmentsChanged === true && angular.equals($scope.loadedCard, $scope.cardFormCard)) {
+         if ($scope.attachmentsChanged === true && angular.equals($scope.loadedCard, Cards.cardFormCard)) {
             return false;
          }
-         if ($scope.attachmentsChanged === false && !angular.equals($scope.loadedCard, $scope.cardFormCard)) {
+         if ($scope.attachmentsChanged === false && !angular.equals($scope.loadedCard, Cards.cardFormCard)) {
             return false;
          }
-         if ($scope.attachmentsChanged === true && !angular.equals($scope.loadedCard, $scope.cardFormCard)) {
+         if ($scope.attachmentsChanged === true && !angular.equals($scope.loadedCard, Cards.cardFormCard)) {
             return false;
          }
 
@@ -346,12 +345,9 @@ angular.module('oto')
    };
 
    //DRY with cardlistctrl
-   $scope.attDownloadSrc = function(att) {
-      return 'TODO';
-   };
-
    $scope.attThumbSrc = function(att) {
       if (att.image) return att.image.thumb.defaultUrl;
+      else if (att.pdf) return att.pdf.thumb.defaultUrl;
       else return '/img/nothumb.png';
    };
 
@@ -392,7 +388,6 @@ angular.module('oto')
             att:JSON.stringify(newAtt)
          }
       ];
-
       $scope.loadedCard.fileattachments[position] = newAtt;
 
       $scope.progressByPosition[position] = 'init';
@@ -459,45 +454,46 @@ angular.module('oto')
    $scope.addLink = function() {
       $scope.isLinkInputVisible = false;
       var cardid = $scope.loadedCard._id,
-         clientid = makeid(),
          position = $scope.loadedCard.urlattachments.length;
 
       //Display empty thumb, will be filled later
       var newLink = {
          url : $scope.linkInputValue,
-         clientid:clientid,
          cardid:cardid,
          position:position
       };
 
       $scope.loadedCard.urlattachments[position] = newLink;
-      $scope.attachmentsChanged = true;
+      $scope.progressByPositionUrl[position] = 'init';
 
-      //thumbService.storeThumbnail(cardid, clientid, null);
+      $scope.countUploads++;
 
       $http({
          method:'POST',
-         url: '/addlink/',
+         url: '/api/notes/addlink',
          type:'JSON',
          data: {
             cardid : cardid,
-            att : JSON.stringify(newLink),
-            clientid: clientid
+            att : JSON.stringify(newLink)
          }
       })
       .success(function(data, status, headers, config) {
          urlAttachmentsAdded.push(data._id);
 
-         //thumbService.storeThumbnail(config.data.cardid, data.clientid, data._id);
-         //thumbService.changeStatus(data._id, 'done');
+         $scope.loadedCard.urlattachments[data.position] = data;
+         $scope.progressByPositionUrl[data.position] = null;
+         $scope.attachmentsChanged = true; //TODO: is this still used?
+
+         $scope.countUploads--;
       })
       .error(function(error) {
          console.log(error);
+         //TODO: handle this
       });
    };
 
-   $scope.removeLink = function(att) {$scope.progressByPosition[position] = null;
-      urlAttachmentsRemoved.push(att_id);
+   $scope.removeLink = function(att) {
+      urlAttachmentsRemoved.push(att._id);
       $scope.loadedCard.urlattachments.splice($scope.loadedCard.urlattachments.indexOf(att), 1);
       $scope.attachmentsChanged = true;
    };

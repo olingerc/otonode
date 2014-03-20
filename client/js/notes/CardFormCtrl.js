@@ -153,11 +153,11 @@ angular.module('oto')
             Cards.showForm = false;
             $scope.saving = false;
          } else {
-            console.log(found);
+            console.error(found);
             alert('Error saving card:' +  response.card._id);
          }
       }).error(function(error) {
-         console.log(error);
+         console.error(error);
       });
    };
 
@@ -235,12 +235,12 @@ angular.module('oto')
                Cards.showForm = false;
                $scope.saving = false;
             } else {
-               console.log(found);
+               console.error(found);
                alert('Error saving card:' +  card._id);
             }
          })
          .error(function(error) {
-            console.log(error);
+            console.error(error);
          });
    };
 
@@ -348,6 +348,7 @@ angular.module('oto')
    $scope.attThumbSrc = function(att) {
       if (att.image) return att.image.thumb.defaultUrl;
       else if (att.pdf) return att.pdf.thumb.defaultUrl;
+      else if (att.urlThumb) return att.urlThumb;
       else return '/img/nothumb.png';
    };
 
@@ -420,7 +421,7 @@ angular.module('oto')
    });
 
    uploader.bind('error', function (event, xhr, item, response) {
-      console.info('Error', xhr, item, response);
+      console.error('Error', xhr, item, response);
       $scope.progressByPosition[position] = 'error';
       $scope.countUploads--;
    });
@@ -487,7 +488,7 @@ angular.module('oto')
          $scope.countUploads--;
       })
       .error(function(error) {
-         console.log(error);
+         console.error(error);
          //TODO: handle this
       });
    };

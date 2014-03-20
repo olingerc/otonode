@@ -70,6 +70,7 @@ angular.module('oto')
               scope.$apply(function () {
                   ctrl.$setViewValue('');
                   ctrl.$render();
+                  element[0].focus();
               });
             });
          }

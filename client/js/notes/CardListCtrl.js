@@ -96,7 +96,7 @@ angular.module('oto')
    $scope.attThumbSrc = function(att) {
       if (att.image) return att.image.thumb.defaultUrl;
       else if (att.pdf) return att.pdf.thumb.defaultUrl;
-      else if (att.urlThumb) return att.urlThumb.thumb.defaultUrl;
+      else if (att.urlThumb) return att.urlThumb;
       else return '/img/nothumb.png';
    };
 

@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
 var localfs = require('mongoose-attachments-localfs');
 
 localfs.prototype.getUrl = function(path) {
-  return path.replace('/home/christophe/otouploads', '/uploads');
+  return path.replace('/home/christophe/otouploads', '/uploads'); //TODO: mabe use virtual field type to get url?
 }
 var attachments = require('mongoose-attachments');
 
@@ -18,7 +18,7 @@ var attachments = require('mongoose-attachments');
  */
 
 var StackSchema = new Schema({
-    title:      { type: String, required: true, trim: true} , //TODO:, max-length
+    title:      { type: String, required: true, trim: true, max: 140},
     owner:      {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     createdat:  { type: Date , index: true},
     modifiedat: { type: Date }
@@ -66,8 +66,17 @@ AttSchema.plugin(attachments, {
     storage : {
         providerName: 'localfs'
     },
+    /* TODO:
+    directory: "/home/rngadam/letsface/src/prototype/public/images",
+    storage : {
+        providerName: 'localfs',
+        options : {
+          removePrefix: "/home/rngadam/letsface/src/prototype/public"
+        }
+    },
+    */
     properties: {
-        default: {
+        'default': {
             styles: {
                 original: {
                     // keep the original file
@@ -130,8 +139,8 @@ mongoose.model('UrlAtt', UrlAttSchema);
  */
 
 var CardSchema = new Schema({
-    title:                  {type: String, required: true, trim: true} , //TODO:, max-length
-    content:                String,
+    title:                  {type: String, required: true, trim: true, max: 140},
+    content:                String, //TODO: max
     stackid:                {type: mongoose.Schema.Types.ObjectId, ref: 'Stack'},
     owner:                  {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     createdat:              {type: Date , index: true},
@@ -150,7 +159,6 @@ CardSchema.pre('save', function(next){
   }
   next();
 });
-
 
 mongoose.model('Card', CardSchema);
 

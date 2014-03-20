@@ -13,7 +13,7 @@
 
 - PDF only first page
 - URLs
-- download srcs
+- download gives 404
 - clean up uploads folder when removing att
 - undefined in mongoose-attachment
 - cancel upload manually

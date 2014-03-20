@@ -1102,7 +1102,8 @@ var mongoose = require('mongoose'),
     Card = mongoose.model('Card'),
     Att = mongoose.model('Att'),
     UrlAtt = mongoose.model('UrlAtt'),
-    async = require('async');
+    async = require('async'),
+    exec = require('child_process').exec;
 
 
 exports.getall = function(req, res) {
@@ -1180,7 +1181,7 @@ exports.post = function(req, res) {
                     att.cardid = card._id;
                     att.save(function(err, att) {
                         if (err) console.log(err);
-                        callback(att);
+                        callback(err, att);
                     });
                 });
             }, function(err, results) {
@@ -1196,7 +1197,7 @@ exports.post = function(req, res) {
                     att.cardid = card._id;
                     att.save(function(err, att) {
                         if (err) console.log(err);
-                        callback(att);
+                        callback(err, att);
                     });
                 });
             }, function(err, results) {
@@ -1356,8 +1357,6 @@ exports.deleteAtts = function(req, res) {
                 card.fileattachments.remove(attid);
             });
 
-            //TODO: urlatts
-
             card.save(function(err) {
                 if (err) {
                     console.log(err);
@@ -1371,7 +1370,7 @@ exports.deleteAtts = function(req, res) {
     //Remove atts
     async.map(reqatt_ids, function(id, callback) {
         Att.remove({_id:id}, function (err) {
-            callback(err);
+            callback(err, null);
         });
     }, function(err, result) {
         console.log('all deleted' + result)
@@ -1379,31 +1378,74 @@ exports.deleteAtts = function(req, res) {
 };
 
 exports.addLink = function(req, res) {
-  var cardid = req.body.cardid,
+    var cardid = req.body.cardid,
       reqatt = JSON.parse(req.body.att);
 
-  var position = reqatt.position,
-    url = reqatt.url;
+    var position = reqatt.position,
+        url = reqatt.url;
 
+    var filename = cardid + "_" + Math.round(Math.random()*1000) + ".jpg";
+    var thumb_path = '/home/christophe/otouploads/urlthumbs/' + filename;
+    var thumb_path_url = '/uploads/urlthumbs/' + filename;
+    var command = "phantomjs " + __dirname + "/rasterize.js '" + url + "' '" + thumb_path + "'";
+    exec(command, function (err, stdout, stderr) {
+        console.log(err, stdout, stderr)
+      if (err) return res.send(err, 500);
 
-  var att = new UrlAtt({
-        position: position,
-        url: url,
-        cardid: cardid
+      var att = new UrlAtt({
+            position: position,
+            url: url,
+            urlThumb: thumb_path_url,
+            cardid: cardid
+        });
+
+        att.save(function(err, att) {
+
+          if(err) {
+            console.log(error)
+            return res.send(att, 500);
+          }
+
+          //Save to existing card
+          if (!cardid) return res.send('No cardid provided', 500);
+
+          if (cardid.substring(0,3) != 'new') {
+            Card
+            .findById(cardid)
+            .exec(function (err, card) {
+                if (err) {
+                    console.log(err);
+                    return res.send(err, 500);
+                }
+                if (!card) {
+                    console.log('card not found');
+                    return res.send('card not found', 500);
+                }
+                card.urlattachments.push(att);
+                card.save(function(err) {
+                    if (err) {
+                        console.log(err);
+                        return res.send(err, 500);
+                    }
+                    res.send(att, 200)
+                })
+            })
+          } else {
+            //Saving parentless att, retrieve on filesave
+            res.send(att, 201);
+          }
+      });
     });
+};
 
-    att.save(function(err, att) {
+exports.deleteLinks = function(req, res) {
+  var cardid = req.body.cardid,
+      reqatt_ids = JSON.parse(req.body.array);
 
-      if(err) {
-        console.log(error)
-        return res.send(att, 500);
-      }
+      //TODO if cancelling do not change modifiedat
 
-      //Save to existing card
-      if (!cardid) return res.send('No cardid provided', 500);
-
-      if (cardid.substring(0,3) != 'new') {
-        Card
+    if (cardid.substring(0,3) != 'new') {
+         Card
         .findById(cardid)
         .exec(function (err, card) {
             if (err) {
@@ -1414,22 +1456,26 @@ exports.addLink = function(req, res) {
                 console.log('card not found');
                 return res.send('card not found', 500);
             }
-            card.urlattachments.push(att);
+            _.each(reqatt_ids, function(attid) {
+                card.urlattachments.remove(attid);
+            });
+
             card.save(function(err) {
                 if (err) {
                     console.log(err);
                     return res.send(err, 500);
                 }
-                res.send(att, 200)
-            })
-        })
-      } else {
-        //Saving parentless att, retrieve on filesave
-        res.send(att, 201);
-      }
-  });
-};
+                res.send(card, 200)
+            });
+        });
+    }
 
-exports.deleteLinks = function(req, res) {
-    //TODO
+    //Remove atts
+    async.map(reqatt_ids, function(id, callback) {
+        UrlAtt.remove({_id:id}, function (err) {
+            callback(err, null);
+        });
+    }, function(err, result) {
+        console.log('all deleted' + result)
+    });
 };

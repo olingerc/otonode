@@ -27,10 +27,10 @@ var StackSchema = new Schema({
 StackSchema.index({ title: 1, owner: 1}, { unique: true });
 
 StackSchema.pre('save', function (next){
-  this.modifiedat = new Date;
+  /*this.modifiedat = new Date;
   if ( !this.createdat ) {
     this.createdat = new Date;
-  }
+  }*/
   next();
 });
 
@@ -153,10 +153,10 @@ var CardSchema = new Schema({
 });
 
 CardSchema.pre('save', function(next){
-  this.modifiedat = new Date;
+  /*this.modifiedat = new Date;
   if ( !this.createdat ) {
     this.createdat = new Date;
-  }
+  }*/
   next();
 });
 

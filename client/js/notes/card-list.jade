@@ -26,6 +26,11 @@ section(ng-controller='CardFormCtrl')
         ng-click='listStackAll()'
         )
         | All
+      .btn.stack(
+        ng-class='{"active btn-primary": stackIsActive("All"), "btn-default": !stackIsActive("All")}'
+        ng-click='listStackAll()'
+        )
+        | All
 
     //Stack actions
     .btn-group.pull-right.stack_actions

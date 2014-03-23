@@ -159,5 +159,9 @@ angular.module('oto')
       };
    };
 
+   $scope.import = function() {
+      Cards.import();
+   }
+
 }]);
 

@@ -84,11 +84,5 @@ module.exports = [
       httpMethod: 'POST',
       middleware: [cards.deleteLinks],
       accessLevel: accessLevels.user
-   },
-   {
-      path: '/api/notes/stacksimport',
-      httpMethod: 'GET',
-      middleware: [stacks.import],
-      accessLevel: accessLevels.user
    }
 ];

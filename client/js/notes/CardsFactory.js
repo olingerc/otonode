@@ -42,9 +42,6 @@ angular.module('oto')
       },
       cardFormCard: _cardFormCard,
       showForm: _showForm,
-      import: function() {
-         $http.get('/api/notes/stacksimport').success().error(function(rr) {console.log(rr)});
-      },
       cards: _cards
    };
 }]);

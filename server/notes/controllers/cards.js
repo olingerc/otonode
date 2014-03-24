@@ -34,11 +34,13 @@ exports.getall = function(req, res) {
         }
 
 
-        _.each(cards, function(card) {
+        /*_.each(cards, function(card) {
             if (card.fileattachments == null) card.fileattachments = [];
             if (card.urlattachments == null) card.urlattachments = [];
             card.save();
-        });
+        });*/
+        //TODO: create maintenance page with this smippet
+        //Also to remove files and thumbs no longer important
 
         res.send(cards, 200);
     });
@@ -50,9 +52,7 @@ exports.get = function(req, res) {
     Card.findOne({_id:cardid})
     .exec(function(err, card) {
         if (err) return res.send(err, 500);
-
         res.send(card);
-
     });
 };
 

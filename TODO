@@ -12,7 +12,6 @@
   save not cancel but simply leaves page. Periodically or on page load? Manual button for admin?
 
 - PDF only first page
-- URLs
 - download gives 404
 - clean up uploads folder when removing att
 - undefined in mongoose-attachment

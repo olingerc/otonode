@@ -153,10 +153,10 @@ var CardSchema = new Schema({
 });
 
 CardSchema.pre('save', function(next){
-  /*this.modifiedat = new Date;
+  this.modifiedat = new Date;
   if ( !this.createdat ) {
     this.createdat = new Date;
-  }*/
+  }
   next();
 });
 

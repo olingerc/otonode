@@ -20,6 +20,8 @@ var mongoose = require('mongoose'),
 exports.getall = function(req, res) {
     var currentuser_id = req.session.passport.user;
 
+
+
     Card
     .find({owner: currentuser_id})
     .populate('fileattachments')
@@ -30,6 +32,14 @@ exports.getall = function(req, res) {
             console.log(err)
             return res.send(error, 500)
         }
+
+
+        _.each(cards, function(card) {
+            if (card.fileattachments == null) card.fileattachments = [];
+            if (card.urlattachments == null) card.urlattachments = [];
+            card.save();
+        });
+
         res.send(cards, 200);
     });
 };

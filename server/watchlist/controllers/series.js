@@ -11,7 +11,7 @@ require('../models/models.js');
  */
 
 var mongoose = require('mongoose'),
-   tvDB = require("thetvdb-api"),
+   tvDB = require("node-tvdb"),
    key = require("../../../config/config").TVDBAPIKEY,
    proxy = require("../../../config/config").proxy,
    rootPath = require("../../../config/config").root,

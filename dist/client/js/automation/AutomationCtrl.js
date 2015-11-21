@@ -1,0 +1,1 @@
+"use strict";angular.module("oto").controller("AutomationCtrl",["$scope",function(a,b){a.wirelessStatus="",a.wirelessOn=function(a){},a.wirelessOff=function(a){}}]);

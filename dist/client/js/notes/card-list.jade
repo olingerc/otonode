@@ -1,0 +1,233 @@
+section(ng-controller='CardFormCtrl')
+  div(ng-show='showForm')
+    ng-include(src="'/js/notes/cardForm.html'")
+
+
+#cardView.row(
+  ng-controller='NotesViewCtrl'
+  ng-hide='showForm'
+  )
+  section#sidebar.col-md-3(ng-controller='StackListCtrl')
+    // Fix stacks
+    .btn-group
+      .stack.btn.btn-default(
+        ng-click='listStackUser(floatingStack)',
+        ng-class='{"active btn-primary": stackIsActive(floatingStack.title), "btn-default": !stackIsActive(floatingStack.title)}'
+        )
+        | {{floatingStack.title}}
+      a#archive_button.stack.btn.btn-default(
+        title='Archive',
+        ng-class='{"active btn-primary": stackIsActive("Archive"), "btn-default": !stackIsActive("Archive")}'
+        ng-click='listStackArchive()'
+        )
+        span.glyphicon.glyphicon-inbox
+      .btn.stack(
+        ng-class='{"active btn-primary": stackIsActive("All"), "btn-default": !stackIsActive("All")}'
+        ng-click='listStackAll()'
+        )
+        | All
+
+    //Stack actions
+    .btn-group.pull-right.stack_actions
+      #addStackButton.inline.btn.btn-success(ng-click='startAddStack()')
+        i.glyphicon.glyphicon-plus
+      .btn-group
+        .btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', ng-disabled='stackIsEditable()')
+          span.glyphicon.glyphicon-list
+          span.caret
+        ul.dropdown-menu(role='menu')
+          li
+            a(ng-click='startDeleteStack(activestack)') Delete
+          li
+            a(ng-click='startRenameStack(activestack)') Rename
+    #stackactions
+      //Add stack
+      form(name='addStackForm', ng-show='isVisibleStackAdd')
+        small.text-info Add new
+        input.form-control(
+          placeholder='Title',
+          name='addStackInput',
+          type='text',
+          xng-focus='isVisibleStackAdd',
+          ng-model='addStackInput',
+          ng-required='isVisibleStackAdd'
+          )
+        button.inline.btn.btn-default(
+          type='submit',
+          ng-click='stackActionError=false;addStack()',
+          ng-disabled='addStackForm.addStackInput.$invalid'
+          )
+          span.glyphicon.glyphicon-ok
+        .btn.btn-default(ng-click='isVisibleStackAdd=false;stackActionError=false')
+          span.glyphicon.glyphicon-remove
+      //Rename stack
+      form(name='renameStackForm', ng-show='isVisibleStackRename')
+        small.text-info Rename {{stackToRename.title}} to
+        input.form-control.inline(
+          name='renameStackInput',
+          type='text',
+          placeholder='new title',
+          xng-focus='isVisibleStackRename',
+          ng-model='renameStackInput',
+          ng-required='isVisibleStackRename'
+          )
+        .btn.btn-default(
+          type='submit',
+          ng-click='stackActionError=false;renameStack(stackToRename)',
+          ng-disabled='renameStackForm.renameStackInput.$invalid || renameStackInput == stackToRename.title'
+          )
+          span.glyphicon.glyphicon-ok
+        .btn.btn-default(ng-click='isVisibleStackRename=false;stackActionError=false')
+          span.glyphicon.glyphicon-remove
+      //Delete stack
+      form(ng-show='isVisibleStackDelete')
+        small.text-danger Delete {{stackToDelete.title}} ?
+        .clearfix
+        .btn.btn-danger(ng-click='deleteStack(stackToDelete)')
+          span.glyphicon.glyphicon-ok
+        .btn.btn-default(ng-click='isVisibleStackDelete=false')
+          span.glyphicon.glyphicon-remove
+      small.text-danger(ng-show='stackActionError') {{stackActionErrorMsg}}
+
+    // User stacks
+    .stacklist.list-group
+      a.stack.list-group-item(
+        ng-repeat='stack in stacks | orderBy:"createdat"',
+        ng-class='{"active": stackIsActive(stack.title)}',
+        ng-click='listStackUser(stack)'
+        )
+        span.pull-left {{stack.title}}
+        span.pull-right.badge(ng-bind='stackSizes[stack._id]')
+        .clearfix
+
+  //Middle Row
+  section#middlebar.col-md-8
+
+    // Cards list header
+    .row
+      //Title
+      #stackHeader.col-lg-3
+        h3 {{activestack.title}}
+
+      //Add card and query
+      .col-lg-5
+        ul.list-inline
+          li
+            .btn.btn-success(ng-click='startAddCard()', ng-hide='inArchive()')
+              | Add Card
+          li
+            input#notesQuery.form-control(
+              title='Includes attachment file names and urls',
+              type='text',
+              placeholder='Search stack',
+              ng-model='query',
+              oto-reset=''
+              )
+
+      //Sort options
+      .col-lg-4.view_options
+        .btn-toolbar.pull-right(role='toolbar')
+          .btn-group
+            .active.btn.btn-default
+              span.glyphicon.glyphicon-tasks
+            .btn.btn-default
+              span.glyphicon.glyphicon-calendar
+            .btn-group.cards_order_options.pull-right
+              .btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+                span.glyphicon.glyphicon-sort
+                span.caret
+              ul.dropdown-menu(role='menu')
+                li
+                  a(ng-click='setOrder("-modifiedat")', ng-class='{"active": orderProp=="-modifiedat"}') Last modified
+                li
+                  a(ng-click='setOrder("-createdat")', ng-class='{"active": orderProp=="-createdat"}') Last created
+                li
+                  a(ng-click='setOrder("title")', ng-class='{"active": orderProp=="title"}') Title
+          .btn-group
+            .btn.btn-default(
+              type='button',
+              ng-disabled='inArchive() || !isNotNull(activeCard.value)',
+              ng-click='startEditCard(activeCard.value)'
+              )
+              span.glyphicon.glyphicon-edit
+            .btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', ng-disabled='!isNotNull(activeCard.value)')
+              span.glyphicon.glyphicon-list
+              span.caret
+            ul.dropdown-menu
+              li
+                a(
+                  ng-class='{"mute_link": inArchive()}',
+                  ng-click='startEditCard(activeCard.value)',
+                  ng-disabled='inArchive()'
+                  )
+                  | Edit
+              li.dropdown-header
+                | Move to stack
+              li
+                a(ng-click='moveCard(activeCard.value, floatingStack._id)') Floating
+              li(ng-repeat='stack in stacks')
+                a(ng-click='moveCard(activeCard.value, stack._id)') {{stack.title}}
+              li.divider
+              li.dropdown-header
+                | Other
+              li
+                a(ng-click='removeCard(activeCard.value)') {{{true: 'Delete permanently', false: 'Archive'}[inArchive()]}}
+              li
+                a(ng-click='openDetails(activeCard.value)') Details
+
+    // Cards list
+    .row
+      .col-lg-12
+        div(ng-controller='CardListCtrl')
+          div(ng-repeat='cardGroup in cardGroups')
+            small.text-muted {{cardGroup.label}}
+            .list-group
+              .card.list-group-item(
+                ng-repeat='card in cardGroup.cards',
+                ng-class='{"active": cardIsActive(card)}',
+                ng-click='selectCard(card)',
+                ng-dblclick='startEditCard(card)'
+                )
+                // Start of card
+                // Card title row
+                h4.pull-left.list-group-item-heading {{card.title}}
+                ul.clearfix.list-inline.label-list
+                  // just add pull-right to align right
+                  li
+                  li.label.label-default(ng-show='activestack.title=="All"') {{getStacktitle(card.stackid)}}
+                  li.label.label-default(ng-show='isNotNull(card.stacktitleafterarchived)') original: {{card.stacktitleafterarchived}}
+                  li.card_due_label.label.label-default(title='due date', ng-show='isNotNull(card.duedate)')
+                    small
+                      i.glyphicon.glyphicon-time
+                      | {{card.duedate  | date:'yyyy-MM-dd'}}
+
+                // Card Content
+                p {{card.content}}
+
+                // Tumbnails
+                ul.list-inline.thumblist
+                  // file Attachments
+                  li(ng-repeat='att in card.fileattachments')
+                    a.att_thumb_link(
+                      title='{{att.filename}}',
+                      ng-href='{{attDownloadSrc(att)}}',
+                      )
+                      .thumbContainer
+                        img.att_thumb.img-rounded(
+                          ng-src='{{attThumbSrc(att)}}'
+                          )
+                  // url Attachments
+                  li(ng-repeat='att in card.urlattachments')
+                    a.att_thumb_link(
+                      title='{{att.url}}',
+                      target='_blank',
+                      ng-href='{{att.url}}'
+                      )
+                      .thumbContainer
+                        img.att_thumb.img-rounded(
+                          ng-src='{{attThumbSrc(att)}}'
+                          )
+                      small.att_thumb_overlay
+                        span.glyphicon.glyphicon-share-alt
+
+  section#rightbar.col-md-1

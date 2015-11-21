@@ -1,0 +1,1 @@
+angular.module("oto").controller("NavCtrl",["$rootScope","$scope","$location","Auth",function(a,b,c,d){b.user=d.user,b.userRoles=d.userRoles,b.accessLevels=d.accessLevels,b.logout=function(){d.logout(function(){c.path("/login")},function(){a.error="Failed to logout"})}}]);

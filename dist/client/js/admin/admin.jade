@@ -1,0 +1,56 @@
+h1 Adminstrator interface
+
+div(ng-controller='UsersCtrl')
+   h2 Users
+     h3 Add user
+     form.form-inline(novalidate='novalidate', role='form', name='userForm')
+       .form-group
+         input.form-control(placeholder='username', required='required', type='text', ng-model='user.username')
+       .form-group
+         input.form-control(placeholder='full name (optional)', type='text', ng-model='user.name')
+       .form-group
+         input.form-control(placeholder='new password', required='required', type='password', ng-model='user.password')
+       .form-group
+          label.radio-inline
+              input(type="radio", name="role", data-ng-model="user.role", id="adminRole", data-ng-value="userRoles.admin")
+              | Administrator
+          label.radio-inline
+              input(type="radio", name="role", data-ng-model="user.role", id="adminRole", data-ng-value="userRoles.user")
+              | User
+       button.btn.btn-primary(type='submit', ng-click='userFormAction(user)', ng-disabled='userForm.$invalid  || isUnchanged(user)')
+         | {{userFormState.action}}
+       button.btn.btn-default(ng-click='resetForm()')
+         | reset
+       span.text-warning(ng-show='userFormState.errorAlreadyExists') Username already exists
+       span.text-warning(ng-show='userFormState.errorFillAll') Please fill all required fields
+   
+   h2 Existing users
+   
+   table.table.table-striped(data-ng-hide="loading")
+       thead
+           tr
+               th Username
+               th Full Name
+               th Role
+               th Actions
+       tbody
+           tr(data-ng-repeat="user in users")
+               td
+                  i.fa.fa-google-plus-square(data-ng-show="user.provider == 'google'")
+                  |  {{ user.username }}
+               td
+                  | {{user.name}}
+               td
+                   span.label(data-ng-class='{"label-info": user.role.title == userRoles.user.title, "label-success": user.role.title == userRoles.admin.title}') {{ user.role.title }}
+               td
+                  button(ng-click='deleteUser(user)') Delete
+                  button(ng-click='updateUser($index)') Update
+               
+hr
+div(ng-controller='DBCtrl')
+   h2 Actions
+   button.btn.btn-primary(ng-click='exportDB()') Save mongo db
+   span(ng-show='exportprogress') Creating export
+   span(ng-show='exportok')
+     a(href='/exportdbdownload') Download ready
+   span(ng-show='exporterror') Something went worng

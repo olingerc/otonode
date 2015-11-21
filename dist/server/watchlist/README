@@ -1,0 +1,2 @@
+To have basic proxy usage:
+npm install https://github.com/olingerc/thetvdb-api/tarball/master --save

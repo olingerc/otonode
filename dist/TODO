@@ -1,0 +1,29 @@
+*Core:
+- Validations for user
+- OAuth by google, callback errors
+- Super safe cookie rememberme system
+- Make subnav more modular. Just give array with href and label to route.data.subnav
+
+*Household
+- Look after ngTable
+
+*Notes,
+- Clean up atts without corresponding cards, should not happen. only if user does not clik
+  save not cancel but simply leaves page. Periodically or on page load? Manual button for admin?
+
+- PDF only first page
+- download gives 404
+- clean up uploads folder when removing att
+- undefined in mongoose-attachment
+- cancel upload manually
+------------------------------------
+
+*System
+
+-----------------------------------
+
+*Comments:
+File uploads: https://github.com/felixge/node-formidable
+Use font awesome (the .fa things)
+Mean uses dynamic helpers. what are those?
+

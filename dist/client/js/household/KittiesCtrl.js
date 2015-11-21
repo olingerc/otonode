@@ -1,0 +1,1 @@
+angular.module("oto").controller("KittiesCtrl",["$scope","$http","$rootScope",function(a,b,c){b.get("/api/household/all").success(function(b){a.kitties=b}),a.newkitty=function(){b.post("/api/household/create",{name:a.kittyname}).success(function(b){a.kitties.push(b)})}}]);

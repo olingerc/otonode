@@ -1,0 +1,74 @@
+.row.morepadding
+  .col-md-12
+    form.form-inline(role='form', ng-submit='searchSeries()')
+      .form-group
+        input#searchInut.form-control(ng-model='query', type='text', placeholder='enter name')
+      button.btn.btn-default(type='submit')
+        span.glyphicon.glyphicon-search
+.row(ng-show='showSearchResults')
+  .col-md-12
+    span(ng-show='searching') Searching...
+.row(ng-show='showSearchResults')
+  .col-md-12
+    // Search result
+    h3(ng-show='showSearchResults && !searching')
+      | Search Results
+      button.btn.btn-success(ng-show='showSearchResults && !searching', ng-click='showSearchResults=false') Close
+    .list-group.col-xs-12.col-sm-12.col-md-12.col-lg-12(ng-if='searchResults.length > 0', ng-hide='searching')
+     a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in searchResults')
+        h4.list-group-item-heading
+          | {{series.SeriesName}}
+          button.removeSeriesBtn.btn.btn-success.pull-right(ng-click='addSeries(series)')
+            span(ng-if='savingAdd[series.seriesid]') {{savingAdd[series.seriesid]}}
+            span(ng-if='!savingAdd[series.seriesid]') Add
+          .clearfix
+        img.seriesThumb.img-rounded.pull-left(ng-src='/api/watchlist/series/thumb/{{series.seriesid}}')
+        dl.dl-horizontal.pull-left
+           dt First aired
+           dd {{series.FirstAired}}
+           dt Overview
+           dd.overviewDD {{series.Overview}}
+           dt Network
+           dd {{series.Network}}
+           dt Test
+           dd: div(ng-href='http://www.imdb.com/{{series.IMDB_ID}}', target='_blank') IMDB
+              
+    // No results
+    p(ng-if='searchResults.length == 0', ng-hide='searching') No results for {{originalQuery}}
+.row(ng-show='loadingCollection')
+  .col-md-12
+    span Loading collection...
+.row(ng-hide='loadingCollection || seriesCollection.length == 0')
+  .col-md-12
+    // Series collection
+    h3 Series Collection
+    .list-group.col-xs-12.col-sm-12.col-md-12.col-lg-12(ng-if='seriesCollection.length> 0')
+      a.list-group-item.col-xs-12.col-sm-12.col-md-6.col-lg-6(href='#', ng-repeat='series in seriesCollection')
+        h4.list-group-item-heading.pull-left
+        img.seriesThumb.img-rounded(ng-src='/api/watchlist/series/thumb/{{series.seriesid}}')
+        h5.pull-left
+          span.text-muted {{series.SeriesName | limitTo:40}}&nbsp;
+          span.label.label-primary(ng-if='series.totalSeasons > 1')
+            | {{series.totalSeasons}} seasons
+          &nbsp;
+          span.label.label-primary(ng-if='series.totalSeasons == 1') 1 season
+          span.label.label-primary(ng-if='series.nextEpisode != null') Next: {{series.nextEpisode}}
+          span.label.label-warning(ng-if='series.nextEpisode == null') {{series.Status}}
+        button.removeSeriesBtn.btn.btn-success.btm-sm.pull-right(ng-click='removeSeries(series, $index)')
+          span.glyphicon.glyphicon-trash
+        .clearfix
+        .episodeTable
+          table.table.table-condensed
+             tr(ng-repeat='ep in series.episodeList|reverse', ng-click='setActiveEpisode(series, ep)', ng-class='{"activeBold": series.activeEpisode==ep}')
+              td(ng-class='{"warning": ep == series.lastdownloaded, "successImp": ep == series.lastwatched, "success": ep == series.lastwatched, "lastAired":epIsNextAired(series, ep)}')
+                small.text-muted(ng-if='ep == series.lastwatched') W
+                small.text-warning(ng-if='ep == series.lastdownloaded') D
+                small.text-warning(ng-if='epIsNextAired(series, ep)') Next aired&nbsp;
+                | {{ep}}
+        span.text-info(ng-show='savingUpdate[series.seriesid]') {{savingUpdate[series.seriesid]}}
+        .btn-group.pull-right
+          .btn.btn-default(ng-click='setLastDownloaded(series)', ng-disabled='series.activeEpisode==null') LD
+          .btn.btn-default(ng-click='setLastWatched(series)', ng-disabled='series.activeEpisode==null') LW
+.row(ng-hide='loadingCollection || seriesCollection.length > 0')
+  .col-md-12
+    span No series in your collection

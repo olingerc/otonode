@@ -1,0 +1,1 @@
+angular.module("oto").controller("HomeCtrl",["$scope","Auth",function(a,b){a.accessLevels=b.accessLevels}]);

@@ -1,0 +1,51 @@
+{
+  "name": "oto",
+  "version": "0.0.1",
+  "license": "MIT",
+  "dependencies": {
+    "express": "~3.4.7",
+    "jade": "~1.0.0",
+    "passport": "~0.1.17",
+    "passport-local": "~0.1.6",
+    "underscore": "~1.5.2",
+    "validator": "~1.1.1",
+    "passport-google": "~0.3.0",
+    "mongoose": "~4.2.6",
+    "kerberos": "~0.0.17",
+    "passport-google-oauth": "~0.1.5",
+    "node-tvdb": "~1.6.1",
+    "node-async": "0.0.1",
+    "async": "~0.2.10",
+    "formidable": "^1.0.14",
+    "mongoose-attachments-localfs": "^0.1.0",
+    "mongoose-attachments": "^0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/olingerc/otonode"
+  },
+  "subdomain": "oto",
+  "scripts": {
+    "start": "grunt default"
+  },
+  "engines": {
+    "node": "0.12.x",
+    "npm": "2.13.x"
+  },
+  "devDependencies": {
+    "grunt": "0.4.x",
+    "grunt-concurrent": "2.0.x",
+    "grunt-contrib-clean": "0.6.x",
+    "grunt-contrib-copy": "0.8.x",
+    "grunt-contrib-cssmin": "0.13.x",
+    "grunt-contrib-jshint": "0.11.x",
+    "grunt-contrib-uglify": "0.9.x",
+    "grunt-contrib-watch": "0.6.x",
+    "grunt-env": "0.4.x",
+    "grunt-git": "0.3.x",
+    "grunt-ng-annotate": "1.0.x",
+    "grunt-nodemon": "0.4.x",
+    "grunt-ssh": "0.12.x",
+    "nodemon": "1.4.x"
+  }
+}

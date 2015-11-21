@@ -4,7 +4,7 @@ module.exports = {
     port: process.env.PORT || 80,
     db: 'mongodb://localhost/otonode',
     app: {
-        name: 'OTO - Production'
+        name: 'OTO'
     },
     google: {
         clientID: '619795269050-gh24caheld794f57b2kd26i44dq1agfq.apps.googleusercontent.com',

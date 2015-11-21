@@ -8,11 +8,10 @@ var express =       require('express')
     , util =        require('util')
     , formidable = require('formidable');
 
-/**
- * Define environment. Can be pre-set via grunt already
- */
-
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+    /**
+     * Define environment. Should be pre-set via grunt already or in commandline!
+     */
+    process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 
 //Initialize system variables
@@ -156,12 +155,15 @@ routes = _.uniq(routes);
  * Setup routes
  */
 require('./server/core/setupRouting.js')(app, routes);
-
+/**
+ * Configure Server
+ */
+app.set('port', process.env.PORT || config.port);
+var server = http.createServer(app);
 
 /**
  * Start Server
  */
-app.set('port', process.env.PORT || config.port);
-http.createServer(app).listen(app.get('port'), function(){
-    console.log("Express server listening on port " + app.get('port'));
+server.listen(app.get('port'), function(){
+     console.log('Express server listening on port ' + app.get('port'));
 });

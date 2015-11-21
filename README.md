@@ -14,9 +14,12 @@ On server, modules are loaded in server.js before the core routing
 Configuration of modules goes into config/modules.js
 
 Prerequisites:
-from ubuntu: 
+from ubuntu:
 node (ppa from chris lea)
 mongo (from developers themselves)
+
+
+!!!  for kerberos libkrb5-dev
 
 global npm:
 

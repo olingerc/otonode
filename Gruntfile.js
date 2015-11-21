@@ -197,8 +197,7 @@ module.exports = function(grunt) {
             'cssmin',
             'ngAnnotate',
             'uglify',
-            'clean:stylesheets',
-            'clean:development_files'
+            'clean:stylesheets'
         ]
     );
 

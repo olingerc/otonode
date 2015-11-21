@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+    port: process.env.PORT || 80,
     db: 'mongodb://localhost/otonode',
     app: {
         name: 'OTO - Production'

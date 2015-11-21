@@ -4,10 +4,6 @@ html(lang='en', data-ng-app='oto')
         meta(charset='utf-8')
         meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
         title Organize the Olingers
-        link(rel='stylesheet', href='/css/app.css')
-        link(href="/lib/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
-        link(href="/lib/font-awesome/css/font-awesome.min.css", rel="stylesheet")
-        link(href="/lib/ng-table/ng-table.css", rel="stylesheet")
 
         link(href="/img/apple-touch-icon-120x120.png", sizes="120x120", rel="apple-touch-icon")
         link(href="/img/apple-touch-icon-76x76.png", sizes="76x76", rel="apple-touch-icon")
@@ -15,7 +11,15 @@ html(lang='en', data-ng-app='oto')
         link(href="/img/favicon.ico", rel="shortcut icon", type="image/x-icon")
 
         meta(name="apple-mobile-web-app-capable", content="yes")
-        meta(name="apple-mobile-web-app-status-bar-style", content="black")
+        meta(name="apple-mobile-web-app-status-bar-style", content="black")        
+
+        if env == "development"
+          link(rel='stylesheet', href='/css/app.css')
+          link(href="/lib/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
+          link(href="/lib/font-awesome/css/font-awesome.min.css", rel="stylesheet")
+          link(href="/lib/ng-table/ng-table.css", rel="stylesheet")
+        else
+          link(href="/application.min.css", rel="stylesheet")
 
     body(data-ng-cloak)
 
@@ -72,6 +76,9 @@ html(lang='en', data-ng-app='oto')
         script(src='/lib/ng-table/ng-table.js')
         script(src='/ui-bootstrap-tpls.min.js')
         script(src='/ui-utils.js')
+        
+        if env == "development"
+            script(src='http://localhost:35729/livereload.js')
 
         //Core
         script(src='/js/core/routingConfig.js')

@@ -15,7 +15,9 @@ module.exports = [
                 'username': username,
                 'role': role
             }));
-            res.render('index');
+            res.render('index', {
+               env: process.env.NODE_ENV
+            });
         }]
     }
 ];

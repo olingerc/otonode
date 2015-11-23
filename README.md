@@ -18,6 +18,8 @@ from ubuntu:
 node (ppa from chris lea)
 mongo (from developers themselves)
 
+imagemagick !!!!!!!!!!!!!!!!!!!!!
+
 
 !!!  for kerberos libkrb5-dev
 

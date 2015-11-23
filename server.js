@@ -1,20 +1,28 @@
-var express =       require('express')
-    , http =        require('http')
-    , passport =    require('passport')
-    , path =        require('path')
-    , User_Ctrl =   require('./server/core/controllers/user.js')
-    , _ =           require('underscore')
-    , mongoose =    require('mongoose')
-    , util =        require('util')
-    , formidable = require('formidable');
+var express        = require('express'),
+    http         = require('http'),
+    passport     = require('passport'),
+    path         = require('path'),
+    User_Ctrl    = require('./server/core/controllers/user.js'),
+    _            = require('underscore'),
+    mongoose     = require('mongoose'),
+    httpProxy    = require('http-proxy'),
+    formidable   = require('formidable'),
+    mv           = require('mv'),
+    cookieParser = require('cookie-parser'),
+    session      = require('express-session'),
+    csrf         = require('csurf'),
+    morgan       = require('morgan'),
+    compression = require('compression'),
+    bodyParser   = require('body-parser');
 
-    /**
-     * Define environment. Should be pre-set via grunt already or in commandline!
-     */
-    process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+var MongoStore   = require('connect-mongo')(session);
 
+/**
+ * Define environment. Should be pre-set via grunt already or in commandline!
+ */
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-//Initialize system variables
+//Initialize system variables (uses NODE_ENV to set settings)
 var config = require('./config/config');
 
 // Configure mongoose connection
@@ -31,67 +39,54 @@ var app = module.exports = express();
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/client/js/core');
 
-//Taken over from MEAN
-   app.locals.pretty = true;
-    // Should be placed before express.static
-    // To ensure that all assets and data are compressed (utilize bandwidth)
-   app.use(express.compress({
-      filter: function(req, res) {
-         return (/json|text|javascript|css/).test(res.getHeader('Content-Type'));
-      },
-      // Levels are specified in a range of 0 to 9, where-as 0 is
-      // no compression and 9 is best compression, but slowest
-      level: 9
-   }));
+app.locals.pretty = true;
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
 
-   // Only use logger for development environment
-   if (process.env.NODE_ENV === 'development') {
-      app.use(express.logger('dev'));
-   }
-
-   app.enable('jsonp callback');
-//END taken over
-
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
+app.use(compression());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use('/uploads', express.static('/home/christophe/otouploads'));
 
 app.use(express.static(path.join(__dirname, 'client')));
 
-app.use(express.cookieParser());
-app.use(express.cookieSession({secret: config.sessionSecret}));
+/**
+ * AUTHENTICATION
+ */
 
-/*app.use(function(err, req, res, next){
-    if (req.url == '/upload' && req.method.toLowerCase() == 'post') {
-      // parse a file upload
-      var form = new formidable.IncomingForm();
+// Load passposrt config
+require('./config/passport')(passport);
+//make sure at least one admin user exists
+User_Ctrl.checkAdminMinimum();
+app.use(session({
+    secret: config.sessionSecret,
+    cookie: { maxAge: 3600000 },
+    resave: true,
+    store: new MongoStore({ mongooseConnection: mongoose.connections[0] }),
+    saveUninitialized: true
+})); // session secret
+app.use(passport.initialize());
+app.use(passport.session());
 
-      form.parse(req, function(err, fields, files) {
-        res.writeHead(200, {'content-type': 'text/plain'});
-        res.write('received upload:\n\n');
-        res.end(util.inspect({fields: fields, files: files}));
-      });
-    }
-});*/
-
-
-
-app.configure('development', 'production', function() {
-    app.use(express.csrf());
-    app.use(function(req, res, next) {
-        res.cookie('XSRF-TOKEN', req.csrfToken());
-        res.locals.csrftoken = req.csrfToken();
-        next();
-    });
+app.use(cookieParser()); // read cookies (needed for auth)
+app.use(csrf());
+app.use(function(req, res, next) {
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    res.locals.csrftoken = req.csrfToken();
+    next();
 });
 
+
+/**
+ * FORMIDABLE
+ */
+ //keep after session initialization!
 app.use(function(req, res, next) {
   if (req.url == '/upload' && req.method.toLowerCase() == 'post') {
 
     var form = new formidable.IncomingForm();
-
     var fieldsObj = {};
     var filesObj = {};
 
@@ -108,6 +103,7 @@ app.use(function(req, res, next) {
     form.on('end', function() {
       req.body = fieldsObj;
       req.files = filesObj;
+
       next();
     });
 
@@ -121,30 +117,16 @@ app.use(function(req, res, next) {
 });
 
 /**
- * AUTHENTICATION
- */
-
-// Load passposrt config
-require('./config/passport')(passport);
-//make sure at least one admin user exists
-User_Ctrl.checkAdminMinimum();
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-/**
  * DEFINE ROUTES
  */
 
 // Core route: authentication api
 var routes = require('./server/core/routes/authRoutes');
 
-
 // Add module API ROUTES (plugin entry point, just add routes to this array)
 routes = routes.concat(require('./server/household/routes'));
 routes = routes.concat(require('./server/watchlist/routes'));
 routes = routes.concat(require('./server/notes/routes'));
-
 
 //Remaining routes are handled by angular
 routes = routes.concat(require('./server/core/routes/angularRoutes'));

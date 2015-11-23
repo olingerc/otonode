@@ -20,8 +20,6 @@ var mongoose = require('mongoose'),
 exports.getall = function(req, res) {
     var currentuser_id = req.session.passport.user;
 
-
-
     Card
     .find({owner: currentuser_id})
     .populate('fileattachments')
@@ -201,25 +199,23 @@ exports.upload = function(req, res) {
   var position = reqatt.position,
     filename = reqatt.filename;
 
-
   var att = new Att({
         position: position,
         filename: filename,
         cardid: cardid
     });
-
   //Get att type
   var attType = 'default';
   if (req.files.file.type.search('image/') > -1) attType = 'image';
   if (req.files.file.type.search('application/pdf') > -1) attType = 'pdf';
 
   att.attach(attType, req.files.file, function(err) {
-    if(err) return res.send(err, 500);
-
+    if (err) {
+      console.log(err);
+      return res.send(err, 500);
+    }
     att.save(function(err, att) {
-
-      if(err) {
-        console.log(error)
+      if (err) {
         return res.send(att, 500);
       }
 

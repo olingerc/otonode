@@ -406,6 +406,7 @@ angular.module('oto')
    });
 
    uploader.bind('success', function (event, xhr, item, response) {
+      //console.log('success');
       $scope.loadedCard.fileattachments[response.position] = response;
       fileAttachmentsAdded.push(response._id);
       $scope.progressByPosition[response.position] = null;
@@ -422,6 +423,8 @@ angular.module('oto')
 
    uploader.bind('error', function (event, xhr, item, response) {
       console.error('Error', xhr, item, response);
+      var position = JSON.parse(item.formData[0].att);
+      position = position.position;
       $scope.progressByPosition[position] = 'error';
       $scope.countUploads--;
    });

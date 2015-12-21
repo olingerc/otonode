@@ -4,7 +4,14 @@
       form.form-horizontal(novalidate='', ng-submit="login()", name="loginForm", role="form")
         .form-group
           .col-sm-12
-            input.form-control(type='text', required, placeholder='Username', ng-model='username', autofocus, autocapitalize="none")
+            input.form-control(
+                type='text'
+                required
+                placeholder='Username'
+                ng-model='username'
+                autofocus
+                autocapitalize="none"
+                )
         .form-group
           .col-sm-12
             input.form-control(type='password', required, placeholder='Password', ng-model='password')

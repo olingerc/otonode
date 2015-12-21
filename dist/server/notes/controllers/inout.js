@@ -154,13 +154,13 @@ function copyFiles(card, path, copycallback) {
                         }
                     } else if (att.default.original.path) {
                         try {
-                          fs.copySync(att.default.original.path, path + "/" + att.image.original.oname);
+                          fs.copySync(att.default.original.path, path + "/" + att.default.original.oname);
                         } catch (err) {
                           console.error('Oh no, there was an error: ' + err.message)
                         }
                     } else if (att.pdf.original.path) {
                         try {
-                          fs.copySync(att.pdf.original.path, path + "/" + att.image.original.oname);
+                          fs.copySync(att.pdf.original.path, path + "/" + att.pdf.original.oname);
                         } catch (err) {
                           console.error('Oh no, there was an error: ' + err.message)
                         }

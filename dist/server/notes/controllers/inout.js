@@ -54,6 +54,9 @@ function prepareCardFolder(card, callback) {
         if (finderr) {
             callback(finderr, null);
         } else {
+            if (!stack) {
+                stack = {"title": "Orphans"};
+            }
             var stackPath = exportFolder + "/" + stack.title;
             var cardPath = stackPath + "/" + card.title;
             var archivePath = exportFolder + "/Archive";

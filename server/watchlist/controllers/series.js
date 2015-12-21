@@ -57,17 +57,6 @@ exports.thumb = function(req, res) {
 };
 
 function prepareShowsSearchJSON(tvdbdata, allShowsPreparedCallback) {
-    /*[ { seriesid: '79349',
-language: 'en',
-SeriesName: 'Dexter',
-AliasNames: 'Dexter: Early Cuts',
-banner: 'graphical/79349-g28.jpg',
-Overview: 'He\'s smart, he\'s good looking, and he\'s got a great sense of humor. He\'s Dexter Morgan, everyone\'s favorite serial killer. As a Miami forensics expert, he spends his days solving crimes, & nights committing them. But Dexter lives by a strict code of honor that is both his saving grace and lifelong burden. Torn between his deadly compulsion and his desire for true happiness, Dexter is a man in profound conflict with the world and himself.',
-FirstAired: '2006-10-01',
-Network: 'Showtime',
-IMDB_ID: 'tt0773262',
-zap2it_id: 'EP00859795',
-id: '79349' } ]*/
     var showArray = [];
     if (!_.isArray(tvdbdata)) tvdbdata = [tvdbdata]; //tvdb returns object if only one result
 
@@ -224,7 +213,7 @@ var getSeriesFromTVDB = function(showInCollection, showFoundCallback) {
 };
 
 function compileShowDetails(show) {
-    var preparedShow = _.pick(show.Series, 'id', 'SeriesName', 'IMDB_ID', 'banner', 'Status');
+    var preparedShow = _.pick(show, 'id', 'SeriesName', 'IMDB_ID', 'banner', 'Status');
     preparedShow.seriesid = preparedShow.id;
 
     //User settings
@@ -236,7 +225,7 @@ function compileShowDetails(show) {
         now = getDate(),
         nextEpisode;
 
-    _.each(show.Episode, function(episode) {
+    _.each(show.Episodes, function(episode) {
         if (!_.isString(episode.FirstAired)) {
             episode.FirstAired = 'NA'; //Sometimes empty dates are {}
         }
@@ -252,10 +241,10 @@ function compileShowDetails(show) {
 
     });
     //TODO:::
-    /*var lastEpisode = _.last(show.Episode);
+    var lastEpisode = _.last(show.Episodes);
     preparedShow.totalSeasons = lastEpisode.SeasonNumber;
     preparedShow.episodeList = stringArray;
-    preparedShow.nextEpisode = nextEpisode;*/
+    preparedShow.nextEpisode = nextEpisode;
 
     return preparedShow;
 }
@@ -310,9 +299,10 @@ exports.updateSeries = function(req, res) {
 exports.removeSeries = function(req, res) {
     //TODO: a speial embedded doc id exists, use that to remove instead of cycling
     //http://mongoosejs.com/docs/2.8.x/docs/embedded-documents.html
+
+    //TODO, save shows individually, no sub schemas
     var currentuser_id = req.session.passport.user,
         showid = req.body.showid;
-
 
     Collection.findOne({
         userid: currentuser_id
@@ -327,7 +317,7 @@ exports.removeSeries = function(req, res) {
         } else {
             //We have a collection
             _.each(collection.shows, function(show) {
-                if (show.tvdbid == showid) {
+                if (show && show.tvdbid == showid) {
                     //We have a show
                     collection.shows[collection.shows.indexOf(show)].remove();
                 }

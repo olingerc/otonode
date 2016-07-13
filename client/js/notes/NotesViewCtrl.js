@@ -1,6 +1,6 @@
 'use strict';
 angular.module('oto')
-.controller('NotesViewCtrl', ['$scope', '$modal', 'Stacks', 'Cards', function($scope, $modal, Stacks, Cards) {
+.controller('NotesViewCtrl', ['$scope', '$uibModal', 'Stacks', 'Cards', function($scope, $uibModal, Stacks, Cards) {
    /********************
     *
     * parent scope variables
@@ -179,7 +179,7 @@ angular.module('oto')
    };
 
   $scope.openDetails = function (card) {
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: '/js/notes/cardDetailsModal.html',
       controller: CardDetailsModalInstanceCtrl,
       resolve: {
@@ -211,11 +211,11 @@ angular.module('oto')
  * CARD DETAILS MODAL
  *
  ***************/
-var CardDetailsModalInstanceCtrl = function ($scope, $modalInstance, card) {
+var CardDetailsModalInstanceCtrl = function ($scope, $uibModalInstance, card) {
   $scope.card = card;
 
   $scope.ok = function () {
-    $modalInstance.close();
+    $uibModalInstance.close();
   };
 
 };

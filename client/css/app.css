@@ -2,9 +2,9 @@
     display: none;
 }
 
-body {
+/*body {
     font-size: 1em;
-}
+}*/
 
 #cover {
     position:absolute;
@@ -53,7 +53,18 @@ body {
 /**
  *    Header
  */
-.logo {height:30px;margin-bottom:-8px;margin-top:-12px;opacity:0.7}
+.navbar-brand .logo {
+    height:30px;
+    margin-bottom:-8px;
+    margin-top:-12px;
+    opacity:0.7;
+    display: inline-block;
+}
+
+.logo-text {
+    color: #999
+}
+
 ul.nav.navbar-nav {margin-top:0 !important;}
 
 

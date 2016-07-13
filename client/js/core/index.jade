@@ -1,6 +1,7 @@
 doctype html
 html(lang='en', data-ng-app='oto')
     head
+        base(href="/")
         meta(charset='utf-8')
         meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
         title Organize the Olingers
@@ -13,9 +14,9 @@ html(lang='en', data-ng-app='oto')
         meta(name="apple-mobile-web-app-capable", content="yes")
         meta(name="apple-mobile-web-app-status-bar-style", content="black")        
 
-        link(href="/lib/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
+        link(href="/lib/bootstrap/css/bootstrap.min.css", rel="stylesheet")
         link(href="/lib/font-awesome/css/font-awesome.min.css", rel="stylesheet")
-        link(href="/lib/ng-table/ng-table.min.css", rel="stylesheet")
+        link(href="/lib/ng-table/dist/ng-table.min.css", rel="stylesheet")
 
         if env == "development"
           // KEEP LAST
@@ -35,7 +36,7 @@ html(lang='en', data-ng-app='oto')
               a.navbar-brand(title='Organize the Olingers', href='/')
                 img.logo(src='/img/apple-touch-icon-120x120.png')
                 strong tO
-                small.text-muted &nbsp;Organize the Olingers
+                small.logo-text &nbsp;Organize the Olingers
 
             .collapse.navbar-collapse#bs-example-navbar-collapse-1
                ul.nav.navbar-nav
@@ -68,16 +69,15 @@ html(lang='en', data-ng-app='oto')
             span(data-ng-bind="error")
 
         //Dependencies
-        script(src='/lib/jquery/dist/jquery.min.js')
+        script(src='/lib/jquery/jquery.min.js')
         script(src='/lib/underscore/underscore-min.js')
-        script(src='/lib/bootstrap/js/collapse.js')
+        script(src='/lib/bootstrap/js/bootstrap.min.js')
         script(src='/lib/angular/angular.min.js')
-        script(src='/lib/angular-cookies/angular-cookies.min.js')
+        script(src='/lib/angular/angular-cookies.min.js')
         script(src='/lib/angular-ui-router/release/angular-ui-router.min.js')
-        script(src='/lib/angular-file-upload/angular-file-upload.min.js')
-        script(src='/lib/ng-table/ng-table.min.js')
-        script(src='/ui-bootstrap-tpls.min.js')
-        script(src='/ui-utils.js')
+        script(src='/lib/angular-file-upload/dist/angular-file-upload.min.js')
+        script(src='/lib/ng-table/dist/ng-table.min.js')
+        script(src='/lib/angular-ui-bootstrap/ui-bootstrap-tpls.js')
         
         if env == "development"
             script(src='http://localhost:35729/livereload.js')

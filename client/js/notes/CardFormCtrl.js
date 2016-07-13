@@ -1,5 +1,5 @@
 angular.module('oto')
-.controller('CardFormCtrl', ['$scope', '$filter', '$http', 'Auth', 'Stacks', 'Cards', '$fileUploader', function($scope, $filter, $http, Auth, Stacks, Cards, $fileUploader) {
+.controller('CardFormCtrl', ['$scope', '$filter', '$http', 'Auth', 'Stacks', 'Cards', 'FileUploader', function($scope, $filter, $http, Auth, Stacks, Cards, FileUploader) {
 
    var emptyCard = {
       title : '',
@@ -361,7 +361,7 @@ angular.module('oto')
     *
     * **********/
 
-   var uploader = $fileUploader.create({
+   var uploader = $scope.uploader = new FileUploader({
       url: '/upload',
       autoUpload: true,
       removeAfterUpload: true,
@@ -371,7 +371,7 @@ angular.module('oto')
       }
    });
 
-   uploader.bind('afteraddingfile', function (event, item) {
+   uploader.onAfterAddingFile = function (item) {
       //console.info('After adding a file', item);
       var cardid = $scope.loadedCard._id,
          position = $scope.loadedCard.fileattachments.length;
@@ -395,17 +395,17 @@ angular.module('oto')
 
       $scope.countUploads++;
       $scope.$apply();
-   });
+   };
 
-   uploader.bind('progress', function (event, item, progress) {
+   uploader.onProgressItem = function (item, progress) {
       var att = JSON.parse(item.formData[0].att);
       var position = att.position;
       $scope.progressByPosition[position] = progress;
       if (progress == '100') $scope.progressByPosition[position] = 'storing';
       $scope.$apply();
-   });
+   };
 
-   uploader.bind('success', function (event, xhr, item, response) {
+   uploader.onSuccessItem = function (item, response) {
       //console.log('success');
       $scope.loadedCard.fileattachments[response.position] = response;
       fileAttachmentsAdded.push(response._id);
@@ -415,23 +415,23 @@ angular.module('oto')
       $scope.countUploads--
 
       $scope.$apply();
-   });
+   };
 
-   uploader.bind('cancel', function (event, xhr, item) {
-      //console.info('Cancel', xhr, item);
-   });
+   uploader.onCancelItem = function (fileItem, response, status, headers) {
+      //console.info('Cancel', fileItem, response);
+   };
 
-   uploader.bind('error', function (event, xhr, item, response) {
+   uploader.onErrorItem = function (item, response, status, headers) {
       console.error('Error', xhr, item, response);
       var position = JSON.parse(item.formData[0].att);
       position = position.position;
       $scope.progressByPosition[position] = 'error';
       $scope.countUploads--;
-   });
+   };
 
-   uploader.bind('complete', function (event, xhr, item, response) {
-      //console.info('Complete', xhr, item, response);
-   });
+   uploader.onCompleteItem = function (item, response, status, headers) {
+      //console.info('Complete',item, response, status, headers);
+   };
 
    $scope.removeAtt = function(att) {
       fileAttachmentsRemoved.push(att._id);

@@ -9,11 +9,12 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             // libraries
+            'bower_components/lodash/lodash.js',
             'bower_components/angular/angular.js',
             'bower_components/angular-mocks/angular-mocks.js',
 
             // directive
-            'ng-table.js',
+            './dist/ng-table.js',
 
             // tests
             'test/*.js'
@@ -29,10 +30,17 @@ module.exports = function (config) {
         reporters: ['progress', 'coverage'],
 
         autoWatch: true,
-        browsers: ['Chrome'],
+        browsers: ['PhantomJS'],
         coverageReporter: {
             type: 'lcov',
             dir: 'out/coverage'
-        }
+        },
+        plugins:[
+            'karma-jasmine',
+            'karma-coverage',
+            'karma-phantomjs-launcher',
+            'karma-chrome-launcher',
+            'karma-firefox-launcher'
+        ]
     });
 };

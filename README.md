@@ -14,26 +14,20 @@ On server, modules are loaded in server.js before the core routing
 Configuration of modules goes into config/modules.js
 
 Prerequisites:
-from ubuntu:
-node (ppa from chris lea)
-mongo (from developers themselves)
+node (plus grunt-cli for development)
+mongo
 
-imagemagick !!!!!!!!!!!!!!!!!!!!!
+from ubuntu
+imagemagick
+libkrb5-dev (for mongodb install kerberos)
 
-
-!!!  for kerberos libkrb5-dev
-
-global npm:
-
-Production:
-bower
 
 Development additionally:
-grunt-cli
+grunt-cli (global -g)
+
+start with grunt
 
 
-Install deps:
+Production:
 npm install --production -l  (the -l is for local)
-
-Run porudctio:
 NODE_ENV=production node server.js

@@ -36,9 +36,6 @@ function $ViewProvider() {
         if (options.view) {
           result = $templateFactory.fromConfig(options.view, options.params, options.locals);
         }
-        if (result && options.notify) {
-          $rootScope.$broadcast('$viewContentLoading', options);
-        }
         return result;
       }
     };

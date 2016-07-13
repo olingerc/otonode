@@ -3,23 +3,27 @@
 
     <head>
         <title>Uploads only images (with canvas preview)</title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
 
         <!-- Fix for old browsers -->
-        <script src="../bower_components/es5-shim/es5-shim.js"></script>
+        <script src="http://nervgh.github.io/js/es5-shim.min.js"></script>
+        <script src="http://nervgh.github.io/js/es5-sham.min.js"></script>
         <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+        <script src="../console-sham.js"></script>
 
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
         <!--<script src="../bower_components/angular/angular.js"></script>-->
         <script src="http://code.angularjs.org/1.1.5/angular.min.js"></script>
-        <script src="../../angular-file-upload.js"></script>
+        <script src="../../dist/angular-file-upload.min.js"></script>
         <script src="controllers.js"></script>
+
+        <!--thumbnails for images-->
         <script src="directives.js"></script>
 
         <style>
             .my-drop-zone { border: dotted 3px lightgray; }
-            .ng-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
+            .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
             .another-file-over-class { border: dotted 3px green; }
 
             html, body { height: 100%; }
@@ -37,8 +41,8 @@
 
     </head>
 
-    <!-- 1. ng-file-drop | ng-file-drop="options" -->
-    <body ng-controller="TestController" ng-file-drop>
+    <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
+    <body ng-controller="AppController" nv-file-drop="" uploader="uploader">
 
         <div class="container">
 
@@ -52,12 +56,12 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Demos <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="../simple">Simple example</a></li>
-                                <li class="divider"></li>
                                 <li class="active"><a href="#">Uploads only images (with canvas preview)</a></li>
+                                <li><a href="../without-bootstrap">Without bootstrap example</a></li>
                             </ul>
                         </li>
                         <li><a href="https://github.com/nervgh/angular-file-upload">View on Github</a></li>
-                        <li><a href="https://raw.github.com/nervgh/angular-file-upload/master/angular-file-upload.min.js">Download</a></li>
+                        <li><a href="https://raw.githubusercontent.com/nervgh/angular-file-upload/master/dist/angular-file-upload.min.js">Download</a></li>
                     </ul>
                 </div>
             </div>
@@ -69,19 +73,21 @@
                     <h3>Select files</h3>
 
                     <div ng-show="uploader.isHTML5">
-                        <!-- 3. ng-file-over | ng-file-over="className" -->
-                        <div class="well my-drop-zone" ng-file-over>
+                        <!-- 3. nv-file-over uploader="link" over-class="className" -->
+                        <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
                             Base drop zone
                         </div>
 
-                        <!-- Example: ng-file-drop | ng-file-drop="options" -->
-                        <div class="well my-drop-zone" ng-file-drop="{ url: '/foo' }" ng-file-over="another-file-over-class">
-                            Another drop zone with its own settings
+                        <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                        <div nv-file-drop="" uploader="uploader" options="{ url: '/foo' }">
+                            <div nv-file-over="" uploader="uploader" over-class="another-file-over-class" class="well my-drop-zone">
+                                Another drop zone with its own settings
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 2. ng-file-select | ng-file-select="options" -->
-                    <input ng-file-select type="file" multiple  />
+                    <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                    <input type="file" nv-file-select="" uploader="uploader" multiple  /><br/>
 
                 </div>
 
@@ -108,7 +114,7 @@
                                     <!--auto height-->
                                     <!--<div ng-thumb="{ file: item.file, width: 100 }"></div>-->
                                     <!--auto width-->
-                                    <div ng-show="uploader.isHTML5" ng-thumb="{ file: item.file, height: 100 }"></div>
+                                    <div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 100 }"></div>
                                     <!--fixed width and height -->
                                     <!--<div ng-thumb="{ file: item.file, width: 100, height: 100 }"></div>-->
                                 </td>
@@ -139,12 +145,12 @@
                     </table>
 
                     <div>
-                        <p>
+                        <div>
                             Queue progress:
                             <div class="progress" style="">
                                 <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
                             </div>
-                        </p>
+                        </div>
                         <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
                             <span class="glyphicon glyphicon-upload"></span> Upload all
                         </button>

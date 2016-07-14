@@ -139,4 +139,17 @@ angular.module('oto')
                     $scope.exporterror = true;
                 });
         };
+
+        $scope.importFolder = function() {
+            $scope.exportprogress = true;
+            $http.get('/api/importfolder')
+                .success(function(response) {
+                    $scope.exportprogress = false;
+                    $scope.exportok = true;
+                })
+                .error(function(response) {
+                    $scope.exportprogress = false;
+                    $scope.exporterror = true;
+                });
+        };
     }]);

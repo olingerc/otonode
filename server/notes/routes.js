@@ -4,6 +4,13 @@ var accessLevels = require('../../client/js/core/routingConfig').accessLevels,
     inout = require('./controllers/inout');
 
 module.exports = [
+    // INOUT
+    {
+        path: '/api/importfolder',
+        httpMethod: 'GET',
+        middleware: [inout.importfolder],
+        accessLevel: accessLevels.admin
+    },
     //STACKS
     {
         path: '/api/exportnotes',

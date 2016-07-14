@@ -50,6 +50,7 @@ hr
 div(ng-controller='DBCtrl')
    h2 Actions
    button.btn.btn-primary(ng-click='exportDB()') Save mongo db
+   button.btn.btn-primary(ng-click='importFolder()') Import Folder
    button.btn.btn-primary(ng-click='exportNotes()') Export Notes
    span(ng-show='exportprogress') Creating export
    span(ng-show='exportok')

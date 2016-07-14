@@ -143,7 +143,7 @@ module.exports = function(grunt) {
                     env: {
                         PORT: '5000'
                     },
-                    ignore: ['node_modules/**'],
+                    ignore: ['node_modules/**', 'dist/**'],
                     ext: 'js,jade',
                     watch: ['.', 'server'],
                     callback: function(nodemon) {

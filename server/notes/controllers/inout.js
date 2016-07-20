@@ -44,17 +44,52 @@ exports.importfolder = function(req, res) {
 
     // Delete all cards first
     Card.remove({}, function(err) {
-        parseFolder(notesFolder, function(err2, notes) {
+        collectNotesInFolder(notesFolder, function(err2, notes) {
                 if (err2) {
                     res.status(500).send(err2);
                 } else {
-                    res.status(200).send(notes);
+                    async.map(
+                        notes,
+                        readOrWriteOto.bind({ notesFolder: notesFolder }),
+                        function(err, parsedNotes) {
+                            // TODO What NOW ?
+                            // - create thumbs ?
+                            // - read into db or overwrite all in db?
+                            res.status(200).send(parsedNotes);
+                        }
+                    )
                 }
         });
     });
 };
 
-function parseFolder(folder, callback) {
+function readOrWriteOto(note, callback) {
+    // the this context comes because I use bind when calling the function
+    var otoPath = this.notesFolder + "/" + note.noteTitle + "/_oto.json";
+    jsonfile.readFile(otoPath, function(err1, obj) {
+        if (err1) {
+            // Create new oto.json
+            if (err1.code === "ENOENT") {
+                jsonfile.writeFile(otoPath, note, {spaces: 2}, function(err2) {
+                    if (err2) {
+                        note.otoError = err2;
+                    }
+                    callback(null, note);
+                });
+            // Another error has occured while reading
+            } else {
+                //TODO: jsonfile throws the error in that case ??
+                note.otoError = err1;
+                callback(null, note);
+            }
+        } else {
+            // Succesfully read oto.json
+            callback(null, obj);
+        }
+    });
+}
+
+function collectNotesInFolder(folder, callback) {
     // linux find command, much faster than node fs module
     //TODO: fix depth to 1
     execFile(
@@ -80,7 +115,6 @@ function parseFolder(folder, callback) {
         var noteLastMtime;
         var fileName;
         var otoObj;
-        var previousNoteTitle;
         var fileObject;
         var files = stdout.split('\n');
 
@@ -90,8 +124,6 @@ function parseFolder(folder, callback) {
         var filesLeft = files.length;
 
         _.each(files, function(line) {
-            filesLeft -= 1;
-            console.log("A", line);
             // Cut away parent folder and Samples)
             line = line.substring(folder.length + 1, line.length);
 
@@ -101,60 +133,25 @@ function parseFolder(folder, callback) {
             thisNoteTitle = pathList.shift();
             noteLastMtime = line[1];
             fileType = line[2];
-            console.log("files left", filesLeft)
 
-            // One note is now finished handle _oto.json of previous
-            if ((previousNoteTitle && previousNoteTitle !== thisNoteTitle) || filesLeft === 0) {
-                //console.log('diff', previousNoteTitle, thisNoteTitle)
-                // handle it and switch
-                // TODO, make this more elegant somehow, sync is bad
-                if (previousNoteTitle) {
-                    console.log("Saving", previousNoteTitle)
-                    try {
-                        otoObj = jsonfile.readFileSync(folder + "/" + previousNoteTitle + "/_oto.json");
-                        // TODO exists, what now?
-                    } catch (errJson) {
-                        if (!allNotes[previousNoteTitle]) {
-                            console.log('Cant save that because i dont knwo it', previousNoteTitle)
-                        } else {
-                            console.log('I saved', previousNoteTitle)
-                            if (errJson.code && errJson.code === "ENOENT") {
-                                jsonfile.writeFileSync(folder + "/" + previousNoteTitle + "/_oto.json", allNotes[previousNoteTitle], {"spaces": 2})
-                            } else {
-                                console.log(errJson);
-                                allNotes[previousNoteTitle].jsonError = true;
-                            }
-                        }
-                    }
-                }
-                previousNoteTitle = thisNoteTitle;
-            } else {
-                if (!previousNoteTitle) {
-                    previousNoteTitle = thisNoteTitle;
-                }
-                //TODO: safe dict key
-                if (!allNotes[thisNoteTitle]) {
-                    console.log("Starting", thisNoteTitle)
-                    allNotes[thisNoteTitle] = {
-                        "noteTitle": thisNoteTitle,
-                        "lastModified": noteLastMtime,
-                        "urls": [],
-                        "atts": []
-                    };
-                }
+            if (!allNotes[thisNoteTitle]) {
+                allNotes[thisNoteTitle] = {
+                    "noteTitle": thisNoteTitle,
+                    "lastModified": noteLastMtime,
+                    "atts": [],
+                    "urls": []
+                };
             }
 
             // something in notefolder, we took out root folder name with shift above
             if (pathList.length === 1 && fileType === "f") {
                 // something within the note folder
                 fileName = pathList[0];
-                console.log("Something in folder", fileName);
                 if (fileName !== "_oto.json" && fileName.substring(0, 6) !== "thumb_" && fileType === "f") {
                     allNotes[thisNoteTitle].atts.push(fileName);
                 }
             }
         });
-        // TODO, save last one still
         callback(null, _.values(allNotes));
     });
 }
